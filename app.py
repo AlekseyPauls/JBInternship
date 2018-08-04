@@ -13,7 +13,7 @@ def hello_slack():
     print(slack_event)
     if "challenge" in slack_event:
         return make_response(slack_event["challenge"], 200, {"content_type": "application/json"})
-    if "message.im" in slack_event:
+    if slack_event['event']['type'] is "message":
         return make_response("ok", 200, {"content_type": "application/json"})
 
 
