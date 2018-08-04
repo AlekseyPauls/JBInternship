@@ -2,36 +2,30 @@ from flask import Flask
 from flask import request
 from flask import make_response, Response
 import os, json
+from slacker import Slacker
+
+SLACK_TOCKEN = "xoxb-409605691809-409444378032-ktcVNWRxS8ziKtnkNnpWV1qW"
 
 app = Flask(__name__)
+slack = Slacker(SLACK_TOCKEN)
 
 
-@app.route('/webhook', methods=['POST', 'GET'])
+@app.route("/webhook", methods=["POST", "GET"])
 def hello_slack():
-    print(request.data)
-    slack_event = json.loads(request.data.decode("UTF-8"))
-    print(slack_event)
-    if "challenge" in slack_event:
-        return make_response(slack_event["challenge"], 200, {"content_type": "application/json"})
-    if slack_event['event']['type'] is "message":
-        return make_response("ok", 200, {"content_type": "application/json"})
+    json_request = json.loads(request.data.decode("UTF-8"))
+    print(json_request)
+    if "challenge" in json_request:
+        return make_response(json_request["challenge"], 200, {"content_type": "application/json"})
+    slack_event = json_request["event"]
+    if slack_event["type"] == "message":
+        if "subtype" in slack_event:
+            return make_response("ok", 200, {"content_type": "application/json"})
+        else:
+            slack.chat.post_message(slack_event["channel"], slack_event["text"])
+            return make_response("ok", 200, {"content_type": "application/json"})
 
 
-SLACK_WEBHOOK_SECRET = "xoxb-409605691809-409444378032-ktcVNWRxS8ziKtnkNnpWV1qW"
-
-
-@app.route('/slack', methods=['POST', 'GET'])
-def inbound():
-    if request.form.get('token') == SLACK_WEBHOOK_SECRET:
-        channel = request.form.get('channel_name')
-        username = request.form.get('user_name')
-        text = request.form.get('text')
-        inbound_message = username + " in " + channel + " says: " + text
-        print(inbound_message)
-    return Response(), 200
-
-
-@app.route('/', methods=['GET'])
+@app.route('/', methods=["GET"])
 def test():
     return Response('It works!')
 
