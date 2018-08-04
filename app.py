@@ -9,7 +9,7 @@ app = Flask(__name__)
 @app.route('/webhook')
 def hello_slack():
     request_json = request.get_json(silent=True, force=True)
-    response_body_json = "ok"
+    response_body_json = {"challenge": "ok"}
     response_body = json.dumps(response_body_json)
     response = make_response(response_body)
     response.headers['Content-Type'] = 'application/json'
