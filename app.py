@@ -5,6 +5,7 @@ import os, json
 
 app = Flask(__name__)
 
+
 @app.route('/webhook')
 def hello_slack():
     request_json = request.get_json(silent=True, force=True)
