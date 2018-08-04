@@ -8,15 +8,14 @@ app = Flask(__name__)
 
 @app.route('/webhook')
 def hello_slack():
-    request_json = request.get_json(silent=True, force=True)
-    response_body_json = {"challenge": request_json["challenge"]}
-    response_body = json.dumps(response_body_json)
-    response = make_response(response_body)
-    response.headers['Content-Type'] = 'application/json'
-    return response
+    slack_event = json.loads(request.data)
+    if "challenge" in slack_event:
+        return make_response(slack_event["challenge"], 200, {"content_type": "application/json"})
+    else:
+        print("Error")
 
 
-SLACK_WEBHOOK_SECRET = os.environ.get('SLACK_WEBHOOK_SECRET')
+SLACK_WEBHOOK_SECRET = "xoxb-409605691809-409444378032-ktcVNWRxS8ziKtnkNnpWV1qW"
 
 
 @app.route('/slack', methods=['POST'])
