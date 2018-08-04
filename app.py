@@ -8,7 +8,9 @@ app = Flask(__name__)
 
 @app.route('/webhook')
 def hello_slack():
-    slack_event = json.loads(request.data)
+    print(request.data)
+    slack_event = json.loads(str(request.data))
+    print(slack_event)
     if "challenge" in slack_event:
         return make_response(slack_event["challenge"], 200, {"content_type": "application/json"})
     else:
