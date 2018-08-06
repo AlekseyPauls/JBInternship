@@ -1,13 +1,25 @@
 from flask import Flask
 from flask import request
-from flask import make_response, Response
-import os, json
+from flask import make_response, render_template
+from flask_mobility import Mobility
+from flask_mobility.decorators import mobile_template
+from flask_socketio import SocketIO, join_room, leave_room
 from slacker import Slacker
+import os, json, configparser, json
 
-SLACK_TOCKEN = "xoxb-409605691809-409444378032-ktcVNWRxS8ziKtnkNnpWV1qW"
+
+try:
+    config = configparser.RawConfigParser()
+    config.read('settings.properties')
+    SLACK_TOKEN = config['bot']['SLACK_TOKEN']
+except Exception:
+    print("Cant read config file")
+    SLACK_TOKEN = ""
+
 
 app = Flask(__name__)
-slack = Slacker(SLACK_TOCKEN)
+Mobility(app)
+slack = Slacker(SLACK_TOKEN)
 
 
 @app.route("/webhook", methods=["POST", "GET"])
@@ -25,10 +37,45 @@ def hello_slack():
             return make_response("ok", 200, {"content_type": "application/json"})
 
 
-@app.route('/', methods=["GET"])
-def test():
-    return Response('It works!')
+@app.route('/', methods=["POST", "GET"])
+@mobile_template('{mobile/}StartPage.html')
+def start(template):
+    if request.method == 'POST':
+        data = json.loads(request.data.decode('utf-8').replace('\0', ''))
+        return make_response(json.dumps({"answer": data["question"]}), 200, {"content_type": "application/json"})
+    else:
+        return render_template(template)
+
+
+@app.route('/datasets', methods=["POST", "GET"])
+@mobile_template('{mobile/}Datasets.html')
+def datasets(template):
+    if request.method == 'POST':
+        data = json.loads(request.data.decode('utf-8').replace('\0', ''))
+        return make_response(json.dumps({"answer": data["question"]}), 200, {"content_type": "application/json"})
+    else:
+        return render_template(template)
+
+
+@app.route('/statistics', methods=["POST", "GET"])
+@mobile_template('{mobile/}Statistics.html')
+def statistics(template):
+    if request.method == 'POST':
+        data = json.loads(request.data.decode('utf-8').replace('\0', ''))
+        return make_response(json.dumps({"answer": data["question"]}), 200, {"content_type": "application/json"})
+    else:
+        return render_template(template)
+
+
+@app.route('/feedback', methods=["POST", "GET"])
+@mobile_template('{mobile/}Feedback.html')
+def feedback(template):
+    if request.method == 'POST':
+        data = json.loads(request.data.decode('utf-8').replace('\0', ''))
+        return make_response(json.dumps({"answer": data["question"]}), 200, {"content_type": "application/json"})
+    else:
+        return render_template(template)
+
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
-    app.run(debug=False, port=port, host='0.0.0.0')
+    app.run(debug=False, port=5000, host='0.0.0.0')

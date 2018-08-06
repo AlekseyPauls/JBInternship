@@ -1,3 +1,6 @@
 httplib2
 slacker
 Flask==0.12
+Flask-Mobility==0.1.1
+Flask-SocketIO==2.9.6
+ConfigParser==3.5.0
