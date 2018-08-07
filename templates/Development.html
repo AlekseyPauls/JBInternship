@@ -21,19 +21,49 @@
         </div>
         <ul class="nav navbar-nav">
           <li><a href="/">Home</a></li>
-          <li><a href="/datasets">Datasets</a></li>
-          <li><a href="/statistics">Statistics</a></li>
-          <li class="active"><a href="/feedback">Feedback</a></li>
+          <li><a href="/info">Info</a></li>
+          <li class="active"><a href="/development">Development</a></li>
         </ul>
       </div>
     </nav>
 
-    <div class="container1 my-font">
-      <div class="my-text">Send your question:</div>
-      <input type="text" id="question" class="form-control my-input">
-      <button type="button" id="save" class="btn btn-success my-btn">Send</button>
-      <div class="my-text">Answer for you:</div>
-      <div id="answer" class="my-text"></div>
+    <div class="panel-group container2" id="accordion">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Datasets</a>
+          </h4>
+        </div>
+        <div id="collapse1" class="panel-collapse collapse in">
+          <div class="panel-body">
+            In progress
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Statistics</a>
+          </h4>
+        </div>
+        <div id="collapse2" class="panel-collapse collapse">
+          <div class="panel-body">
+            In progress
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Feedback</a>
+          </h4>
+        </div>
+        <div id="collapse3" class="panel-collapse collapse">
+          <div class="panel-body">
+            In progress
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -42,6 +72,7 @@
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
           var json = JSON.parse(xhr.responseText)
+          console.log(json)
           $('#answer').text(json['answer'])
         }
       }

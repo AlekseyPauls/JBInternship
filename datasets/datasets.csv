@@ -1,0 +1,2 @@
+name,description,triggers,file,columns
+Users,Users in month,year month users,users.csv,"{'year': 'years 2017 2018 2016', 'month': 'month January February March April May June July August September October November December', 'users': 'customers users'}"
