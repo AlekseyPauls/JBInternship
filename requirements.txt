@@ -1,3 +1,4 @@
+python-dateutil
 httplib2
 slacker
 Flask==0.12

@@ -5,6 +5,7 @@ div.container1 {
   width: 50%;
   margin-right: auto;
   margin-left: auto;
+  margin-top: 50px;
   text-align: center;
 }
 /* Place that contains other components in the game room */
@@ -16,16 +17,14 @@ div.container2 {
 }
 /* Default button */
 .my-btn {
-  width: 180px;
-  height: 45px;
-  font-size: 20px;
-  margin-top: 15px;
-  margin-bottom: 15px;
+  width: 150px;
+  height: 40px;
+  font-size: 16px;
 }
 
 /* Labels on languages list */
 .lang-label {
-  text-align: center;
+  text-align: left;
   font-size: 16px;
 }
 .header-label {
@@ -58,6 +57,7 @@ textarea.my-ta {
   height: 100%;
   font-size: 18px;
   font-weight: normal;
+  min-width: 300px;
 }
 /* Field for text input (deck name) */
 input.my-input {
@@ -217,3 +217,55 @@ div.centered {
     background-color: #4CAF50;
     color: white;
 }
+
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropbtn:hover, .dropbtn:focus {
+    background-color: #3e8e41;
+}
+
+#myInput {
+    border-box: box-sizing;
+    background-image: url('searchicon.png');
+    background-position: 14px 12px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+    border-bottom: 1px solid #ddd;
+}
+
+#myInput:focus {outline: 3px solid #ddd;}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f6f6f6;
+    min-width: 230px;
+    overflow: auto;
+    overflow-x: hidden;
+    border: 1px solid #ddd;
+    z-index: 1;
+    height: 300px;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover {background-color: #ddd;}

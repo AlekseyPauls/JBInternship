@@ -21,16 +21,48 @@
     </div>
 
     <div class="container1 my-font">
-      <div class="my-text">(ask me about users mean in some month (April, May, ...)</div>
-      <div class="my-text">Send your question:</div>
-      <input type="text" id="question" class="form-control my-input">
-      <button type="button" id="save" class="btn btn-success my-btn">Send</button>
-      <div class="my-text">Answer for you:</div>
-      <div id="answer" class="my-text"></div>
+
+      <table width="100%">
+        <tbody>
+          <tr>
+            <td class="name-cell" align="right">Dataset</td>
+            <td><input type="text" id="dataset" class="form-control my-input" readonly></td>
+            <td id="labelDescription2" class="" align="left" valign="top">
+              <div class="dropdown">
+                <button onclick="showHide()" class="btn btn-success my-btn">Choose dataset</button>
+                <div id="datasetsList" class="dropdown-content">
+                  <input type="text" placeholder="Search..." id="myInput" onkeyup="filterFunction()">
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td id="labelDescription" class="name-cell" align="right" valign="top">Question</td>
+            <td height="150"><textarea id="question" class="form-control my-ta"></textarea></td>
+            <td id="labelDescription1" class="name-cell" align="left" valign="top">
+              <button type="button" id="save" class="btn btn-success my-btn">Send</button>
+            </td>
+          </tr>
+          <tr>
+            <td id="labelCards" class="name-cell" align="right" valign="top">Answer</td>
+            <td height="150"><textarea id="answer" class="form-control my-ta" readonly></textarea></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <script>
       var xhr = new XMLHttpRequest()
+
+      var datasetNames = JSON.parse('{{dataset_names | safe}}')
+      for (var i = 0; i < datasetNames.length; i++) {
+          var datasetElem = document.createElement("a")
+          datasetElem.innerHTML = datasetNames[i]
+          datasetElem.id = i
+          datasetElem.className = "lang-label"
+          document.getElementById("datasetsList").appendChild(datasetElem)
+          console.log("added")
+      }
 
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -40,13 +72,37 @@
       }
 
       $('#save').on('click', function() {
-        var name = $('#question').val()
-        var data = JSON.stringify({"question": name})
+        var question = $('#question').val()
+        var dataset = $('#dataset').val()
+        var data = JSON.stringify({"action": "getQuestion", "question": question, "dataset": dataset})
         xhr.open("POST", "/", true)
         xhr.setRequestHeader("Content-Type", "application/json");
         console.log(xhr.status)
         xhr.send(data)
       })
+
+      $('#datasetsList').on('click', 'a', function() {
+        $('#dataset').val(this.innerHTML)
+      })
+
+      function showHide() {
+          document.getElementById("datasetsList").classList.toggle("show");
+      }
+
+      function filterFunction() {
+          var input, filter, ul, li, a, i;
+          input = document.getElementById("myInput");
+          filter = input.value.toUpperCase();
+          div = document.getElementById("myDropdown");
+          a = div.getElementsByTagName("a");
+          for (i = 0; i < a.length; i++) {
+              if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                  a[i].style.display = "";
+              } else {
+                  a[i].style.display = "none";
+              }
+          }
+      }
     </script>
   </body>
 </html>

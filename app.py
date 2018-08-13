@@ -5,7 +5,7 @@ from flask_mobility import Mobility
 from flask_mobility.decorators import mobile_template
 from flask_httpauth import HTTPBasicAuth
 from slacker import Slacker
-from respondent import Respondent
+from respondent import make_answer
 import os, json, configparser, json, csv
 
 
@@ -46,11 +46,12 @@ def hello_slack():
 def start(template):
     if request.method == 'POST':
         data = json.loads(request.data.decode('utf-8').replace('\0', ''))
-        r = Respondent
-        answer = r.answer(r, data["question"])
-        return make_response(json.dumps({"answer":answer}), 200, {"content_type": "application/json"})
+        print(data)
+        answer = make_answer(data["question"], data["dataset"])
+        return make_response(json.dumps({"answer": answer}), 200, {"content_type": "application/json"})
     else:
-        return render_template(template)
+        dataset_names = json.dumps(get_dataset_names())
+        return render_template(template, dataset_names=dataset_names)
 
 
 @app.route('/info', methods=["POST", "GET"])
@@ -91,6 +92,17 @@ def get_datasets():
             if row[3] == "file":
                 continue
             res.append([row[0], row[1], row[2]])
+    return res
+
+
+def get_dataset_names():
+    res = []
+    with open('datasets/datasets.csv') as csvfile:
+        csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        for row in csvreader:
+            if row[3] == "file":
+                continue
+            res.append(row[0])
     return res
 
 
