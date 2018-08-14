@@ -31,9 +31,15 @@ def calc(current_template, dataset, args1, connectors1, args2, connectors2):
     for con in connectors1:
         if con is not None:
             tmp.append(df.query(s)[args1[connectors1.index(con) + 1]["feature"]])
-
+    s = ""
     for t in tmp:
         print(str(t))
+        for e in t.values:
+            s += str(e) + ", "
+        s = s[:-2]
 
-    res = "ok"
+    res = current_template["answer"].replace("<>", s)
     return str(res)
+
+
+# Can add function for all actions, with params like a "только один повтор"

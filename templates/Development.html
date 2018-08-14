@@ -22,29 +22,159 @@
 
     <div class="navbar-default">
       <div class="tab">
-        <button class="tablinks" onclick="openCity(event, 'London')">London</button>
-        <button class="tablinks" onclick="openCity(event, 'Paris')">Paris</button>
-        <button class="tablinks" onclick="openCity(event, 'Tokyo')">Tokyo</button>
+        <button class="tablinks" onclick="openTab(event, 'datasets')">Datasets</button>
+        <button class="tablinks" onclick="openTab(event, 'statistics')">Statistics</button>
+        <button class="tablinks" onclick="openTab(event, 'feedback')">Feedback</button>
       </div>
 
-      <div id="London" class="tabcontent">
-        <h3>London</h3>
-        <p>London is the capital city of England.</p>
+      <div id="datasets" class="tabcontent">
+        <div class="text-center">
+          <div id="datasetsList" class="tab-elem" style="min-width: 230px; height: 500px; width: 15%;">
+            <div class="header-label" style="padding: 10px;">Choose dataset</div>
+            <input type="text" placeholder="Search..." id="myInput1" class="form-control my-input-small" style="width: 100%;" onkeyup="filterFunction('myInput1', 'datasetsList')">
+            <a id="new1" class="lang-label" style="color: #449d44; font-weight: bold;">New</a>
+          </div>
+          <div class="tab-elem" style="min-width: 350px; height: 500px; width: 20%;">
+            <div class="header-label" style="padding: 10px;">Name</div>
+            <input type="text" id="datasetName" class="form-control my-input-small">
+            <div class="header-label" style="padding: 10px;">Description</div>
+            <textarea id="datasetDescription" class="my-ta-small" style="height: 150px;"></textarea>
+            <div class="header-label" style="padding: 10px;">File</div>
+            <label class="btn btn-success my-btn" style="width: 40%; float: left;">
+                <input type="file" id="file1" accept="text/" style="display: none;">
+                <span id="import1">fff</span>
+            </label>
+            <input type="text" id="filename1" class="filename my-input-small" style="width: 60%; float: left; height: 40px;" disabled>
+            <div class="header-label" style="padding: 10px; margin-top: 50px;">Actions</div>
+            <div class="btn-group" style="padding: 5px;">
+              <button type="button" id="save1" class="btn btn-success my-btn">Save</button>
+              <button type="button" id="delete1" class="btn btn-primary my-btn">Delete</button>
+            </div>
+          </div>
+          <div class="tab-elem" style="min-width: 700px; height: 500px; width: 55%;">
+            <div class="header-label" style="padding: 10px;">Features</div>
+            <table class="table table-striped table-bordered" style="width: 100%">
+              <thead>
+                <tr>
+                  <th style="width: 25%; text-align: center;">Name</th>
+                  <th style="width: 15%; text-align: center;">Type</th>
+                  <th style="width: 45%; text-align: center;">Values</th>
+                  <th style="width: 15%; text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="text" id="newFeatureName" class="form-control my-input-small"></td>
+                  <td>
+                    <button type="button" id="featureType" class="btn btn-success my-btn">Type</button>
+                  </td>
+                  <td><textarea id="values" class="form-control my-ta-small"></textarea></td>
+                  <td><button type="button" id="addFeature" class="btn btn-success my-btn">Add new</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-      <div id="Paris" class="tabcontent" style="display: none;">
-        <h3>Paris</h3>
-        <p>Paris is the capital of France.</p>
+      <div id="statistics" class="tabcontent" style="display: none;">
+        <div class="text-center">
+          <div id="statisticsList" class="tab-elem" style="min-width: 230px; height: 500px; width: 15%;">
+            <div class="header-label" style="padding: 10px;">Choose statistic</div>
+            <input type="text" placeholder="Search..." id="myInput2" class="form-control my-input-small" style="width: 100%;" onkeyup="filterFunction('myInput2', 'statisticsList')">
+            <a id="new2" class="lang-label" style="color: #449d44; font-weight: bold;">New</a>
+          </div>
+          <div class="tab-elem" style="min-width: 350px; height: 500px; width: 20%;">
+            <div class="header-label" style="padding: 10px;">Name</div>
+            <input type="text" id="statisticName" class="form-control my-input-small">
+            <div class="header-label" style="padding: 10px;">Description</div>
+            <textarea id="statisticDescription" class="my-ta-small" style="height: 150px;"></textarea>
+            <div class="header-label" style="padding: 10px;">File</div>
+            <label class="btn btn-success my-btn" style="width: 40%; float: left;">
+                <input type="file2" id="file2" accept="text/" style="display: none;">
+                <span id="import2">fff</span>
+            </label>
+            <input type="text" id="filename2" class="filename my-input-small" style="width: 60%; float: left; height: 40px;" disabled>
+            <div class="header-label" style="padding: 10px; margin-top: 50px;">Actions</div>
+            <div class="btn-group" style="padding: 5px;">
+              <button type="button" id="save2" class="btn btn-success my-btn">Save</button>
+              <button type="button" id="delete2" class="btn btn-primary my-btn">Delete</button>
+            </div>
+          </div>
+          <div class="tab-elem" style="min-width: 700px; height: 500px; width: 55%;">
+            <div class="header-label" style="padding: 10px;">Templates</div>
+            <table class="table table-striped table-bordered" style="width: 100%">
+              <thead>
+                <tr>
+                  <th style="width: 30%; text-align: center;">Question</th>
+                  <th style="width: 25%; text-align: center;">Delimiter</th>
+                  <th style="width: 30%; text-align: center;">Answer</th>
+                  <th style="width: 15%; text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="text" id="newTemplateQuestion" class="form-control my-input-small"></td>
+                  <td><input type="text" id="newTemplateDelimiter" class="form-control my-input-small"></td>
+                  <td><input type="text" id="newTemplateAnswer" class="form-control my-input-small"></td>
+                  <td><button type="button" id="addTemplate" class="btn btn-success my-btn">Add new</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-      <div id="Tokyo" class="tabcontent" style="display: none;">
-        <h3>Tokyo</h3>
-        <p>Tokyo is the capital of Japan.</p>
+      <div id="feedback" class="tabcontent" style="display: none;">
+        <div>In progress...</div>
+      </div>
+    </div>
+
+    <div id="chooseType" class="modal fade my-font" role="dialog">
+      <div class="vertical-alignment-helper">
+        <div class="modal-dialog vertical-align-center">
+          <div class="modal-content">
+            <div class="header-label" style="padding: 15px;">Choose feature type</div>
+            <div id="typesList" class="tab-elem modal-body" style="width: 60%; height: 150px;"></div>
+            <div class="modal-footer">
+              <button id="close1" type="button" class="btn btn-default my-btn" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal" class="modal fade my-font" role="dialog">
+      <div class="vertical-alignment-helper">
+        <div class="modal-dialog vertical-align-center">
+          <div class="modal-content">
+            <div id="message" class="modal-body message-label"></div>
+            <div class="modal-footer">
+              <button id="close2" type="button" class="btn btn-default" data-dismiss="modal">&nbsp;</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <script>
       var xhr = new XMLHttpRequest()
+
+      var dataset_names = JSON.parse('{{dataset_names | safe}}')
+      var statistic_names = JSON.parse('{{statistic_names | safe}}')
+      var types = JSON.parse('{{types | safe}}')
+      generateList(dataset_names, "datasetsList")
+      generateList(statistic_names, "statisticsList")
+      generateList(types, "typesList")
+
+      function generateList(list, place) {
+        for (var i = 0; i < list.length; i++) {
+          var listElem = document.createElement("a")
+          listElem.innerHTML = list[i]
+          listElem.className = "lang-label"
+          document.getElementById(place).appendChild(listElem)
+        }
+      }
 
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -58,30 +188,73 @@
         var name = $('#question').val()
         var data = JSON.stringify({"question": name})
         xhr.open("POST", "/", true)
-        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("Content-Type", "application/json")
         console.log(xhr.status)
         xhr.send(data)
       })
 
-      function openCity(evt, cityName) {
-        // Declare all variables
+      $('#featureType').on('click', function() {
+        $('#chooseType').modal('show')
+      })
+
+      $("#file1").change(function(){
+       var filename = $(this).val().replace(/.*\\/, "")
+       $("#filename2").val(filename)
+      })
+
+      $("#file2").change(function(){
+       var filename = $(this).val().replace(/.*\\/, "")
+       $("#filename2").val(filename)
+      })
+
+      $('#typesList').on('click', 'a', function() {
+        $('#featureType').text(this.innerHTML)
+        $('#chooseType').modal('hide')
+      })
+
+      $('#datasetsList').on('click', 'a', function() {
+        if (this.id == "new1") {
+          $('#datasetName').val("")
+          $('#datasetDescription').val("")
+          $('#filename1').val("")
+        } else {
+          console.log("else")
+        }
+      })
+
+
+
+      function openTab(evt, tabName) {
         var i, tabcontent, tablinks;
-
-        // Get all elements with class="tabcontent" and hide them
-        tabcontent = document.getElementsByClassName("tabcontent");
+        tabcontent = document.getElementsByClassName("tabcontent")
         for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
+            tabcontent[i].style.display = "none"
         }
-
-        // Get all elements with class="tablinks" and remove the class "active"
-        tablinks = document.getElementsByClassName("tablinks");
+        tablinks = document.getElementsByClassName("tablinks")
         for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
+            tablinks[i].className = tablinks[i].className.replace(" active", "")
         }
+        document.getElementById(tabName).style.display = "block"
+        evt.currentTarget.className += " active"
+      }
 
-        // Show the current tab, and add an "active" class to the link that opened the tab
-        document.getElementById(cityName).style.display = "block";
-        evt.currentTarget.className += " active";
+      function showHide() {
+        document.getElementById("typesList").classList.toggle("show")
+      }
+
+      function filterFunction(inp, outp) {
+        var input, filter, a, i, div
+        input = document.getElementById(inp)
+        filter = input.value.toUpperCase()
+        div = document.getElementById(outp)
+        a = div.getElementsByTagName("a")
+        for (i = 0; i < a.length; i++) {
+          if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = ""
+          } else {
+            a[i].style.display = "none"
+          }
+        }
       }
     </script>
   </body>

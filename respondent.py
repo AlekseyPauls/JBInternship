@@ -2,7 +2,6 @@ import csv, importlib, collections, ast
 from dateutil import parser
 
 
-
 def make_answer(question, dataset):
         current_statistic = {}
         current_template = {}
@@ -23,10 +22,6 @@ def make_answer(question, dataset):
         question = question.replace(current_template["question"], "")
         args = question.split(current_template["delimiter"])
 
-        args1 = []
-        connectors1 = []
-        args2 = []
-        connectors2 = []
         args1, connectors1 = find_connectors(args[0], connectors)
         args2, connectors2 = find_connectors(args[1], connectors)
         args1 = find_features(args1, features, intervals)
@@ -34,14 +29,12 @@ def make_answer(question, dataset):
 
         print("Template: " + str(current_template) + "\nArgs1: " + str(args1) + "\nConnectors1: " + str(
             connectors1) + "\nArgs2: " + str(args2) + "\nConnectors2: " + str(connectors2))
-        #return current_action["file"], current_template, args1, connectors1, args2, connectors2
 
         stat = importlib.import_module("statistics." + current_statistic["file"])
         calc = getattr(stat, "calc")
         res = calc(current_template, dataset, args1, connectors1, args2, connectors2)
 
-        return "Template: " + str(current_template) + "\nArgs1: " + str(args1) + "\nConnectors1: " + str(
-            connectors1) + "\nArgs2: " + str(args2) + "\nConnectors2: " + str(connectors2)
+        return res
 
 
 def get_statistics():
@@ -77,6 +70,7 @@ def find_connectors(s, cons):
             t1, t2 = find_connectors(s.split(con)[1], cons)
             return [s.split(con)[0]] + t1, [clean(con)] + t2
     return [s], [None]
+
 
 def find_features(args, features, intervals):
     a = []
@@ -129,6 +123,7 @@ def find_features(args, features, intervals):
 
     return a
 
+
 def clean(s):
     if s == "":
         return s
@@ -138,6 +133,7 @@ def clean(s):
         s = s[:-1]
     return s
 
+
 def get_type(s):
     if is_number(s):
         return "number"
@@ -146,12 +142,14 @@ def get_type(s):
     else:
         return "special"
 
+
 def is_number(s):
     try:
         float(s)
         return True
     except ValueError:
         return False
+
 
 def is_date(s):
     try:

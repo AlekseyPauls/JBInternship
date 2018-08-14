@@ -2,121 +2,111 @@
 
 /* Place that contains other components */
 div.container1 {
-  width: 50%;
-  margin-right: auto;
-  margin-left: auto;
-  margin-top: 50px;
-  text-align: center;
+    width: 50%;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 50px;
+    text-align: center;
 }
 /* Place that contains other components in the game room */
 div.container2 {
-  width: 80%;
-  margin-right: auto;
-  margin-left: auto;
-  text-align: center;
+    width: 80%;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
 }
 /* Default button */
 .my-btn {
-  width: 150px;
-  height: 40px;
-  font-size: 16px;
+    width: 150px;
+    height: 40px;
+    font-size: 16px;
 }
-
 /* Labels on languages list */
 .lang-label {
-  text-align: left;
-  font-size: 16px;
+    text-align: left;
+    font-size: 16px;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
 }
 .header-label {
-  text-align: center;
-  font-size: 18px;
+    text-align: center;
+    font-size: 18px;
 }
 /* Message on modal */
 .message-label {
-  text-align: center;
-  font-size: 20px;
+    text-align: center;
+    font-size: 20px;
 }
 /* Column names in all tables */
 th {
-  font-size: 20px;
-  font-weight: bold;
+    font-size: 18px;
+    font-weight: normal;
 }
 /* Default cell settings (for deck table) */
 td {
-  font-size: 18px;
-  padding: 10px;
+    font-size: 18px;
+    padding: 10px;
 }
 /* Cell for row name */
-td.name-cell {
-  font-size: 18px;
-  font-weight: bold;
+.name-cell {
+    font-size: 20px;
+    font-weight: bold;
 }
 /* Field for text input (description, cards) */
 textarea.my-ta {
-  width: 100%;
-  height: 100%;
-  font-size: 18px;
-  font-weight: normal;
-  min-width: 300px;
+    width: 100%;
+    height: 100%;
+    font-size: 18px;
+    font-weight: normal;
+    min-width: 300px;
+}
+textarea.my-ta-small {
+    width: 100%;
+    font-size: 14px;
+    font-weight: normal;
+    min-width: 300px;
 }
 /* Field for text input (deck name) */
 input.my-input {
-  font-size: 20px;
-  font-weight: normal;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+input.my-input-small {
+    font-size: 14px;
+    font-weight: normal;
 }
 div.my-text {
-  padding: 15px;
-  font-size: 20px;
-  font-weight: normal;
+    padding: 15px;
+    font-size: 20px;
+    font-weight: normal;
 }
 /* Pop-up elements style (warning and info messages) */
 div.modal-text {
-  font-size: 26px;
-  width: 100%;
+    font-size: 26px;
+    width: 100%;
 }
 /* Font style in all app */
 .my-font {
-  font-family: "Arial";
-  font-style: normal;
+    font-family: "Arial";
+    font-style: normal;
 }
 
-/* Unchanged styles*/
-/* It is better to not change this styles */
-
-div.language-dropdawn {
-  position: fixed;
-  right: 15px;
-  top: 15px;
-  display: block;
-  z-index: 99999999;
-}
 div.vertical-alignment-helper {
-  display:table;
-  height: 100%;
-  width: 100%;
+    display:table;
+    height: 100%;
+    width: 100%;
 }
 div.vertical-align-center {
-  display: table-cell;
-  vertical-align: middle;
+    display: table-cell;
+    vertical-align: middle;
 }
 div.modal-content {
-  width: inherit;
-  height: inherit;
-  margin: 0 auto;
-}
-div.card {
-  position: relative;
-  text-align: center;
-  height: 100%;
-  color: black;
-  padding: 10px;
-}
-div.centered {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  white-space: pre-wrap;
+    width: inherit;
+    height: inherit;
+    margin: 0 auto;
 }
 
  /* Style the tab */
@@ -126,7 +116,7 @@ div.centered {
     background-color: #f1f1f1;
     min-width: 100px;
     width: 5%;
-    height:100vh;
+    height: 90vh;
 }
 
 /* Style the buttons that are used to open the tab content */
@@ -177,11 +167,8 @@ div.centered {
     position: absolute;
     left: 100px;
     float: left;
-    padding: 0px 12px;
-    border: 1px solid #ccc;
-    border-left: none;
-    height: 100%;
-    width: 100%;
+    height: 90%;
+    width: 90%;
 }
 
 /* Add a black background color to the top navigation */
@@ -202,7 +189,7 @@ div.centered {
 }
 
 .topnav-home {
-    background-color: #4CAF50;
+    background-color: #449d44;
     color: white;
 }
 
@@ -214,12 +201,12 @@ div.centered {
 
 /* Add a color to the active/current link */
 .topnav a.active {
-    background-color: #4CAF50;
+    background-color: #449d44;
     color: white;
 }
 
 .dropbtn {
-    background-color: #4CAF50;
+    background-color: #449d44;
     color: white;
     padding: 16px;
     font-size: 16px;
@@ -231,22 +218,8 @@ div.centered {
     background-color: #3e8e41;
 }
 
-#myInput {
-    border-box: box-sizing;
-    background-image: url('searchicon.png');
-    background-position: 14px 12px;
-    background-repeat: no-repeat;
-    font-size: 16px;
-    padding: 14px 20px 12px 45px;
-    border: none;
-    border-bottom: 1px solid #ddd;
-}
-
-#myInput:focus {outline: 3px solid #ddd;}
-
 .dropdown {
     position: relative;
-    display: inline-block;
 }
 
 .dropdown-content {
@@ -254,18 +227,23 @@ div.centered {
     position: absolute;
     background-color: #f6f6f6;
     min-width: 230px;
-    overflow: auto;
     overflow-x: hidden;
     border: 1px solid #ddd;
     z-index: 1;
     height: 300px;
 }
 
-.dropdown-content a {
+.lang-label:hover {
     color: black;
-    padding: 12px 16px;
+    background-color: #ddd;
     text-decoration: none;
-    display: block;
 }
 
-.dropdown a:hover {background-color: #ddd;}
+.tab-elem {
+    float: left;
+    margin: 15px;
+    background-color: #f6f6f6;
+    overflow: auto;
+    overflow-x: hidden;
+    border: 1px solid #ddd;
+}

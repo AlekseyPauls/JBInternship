@@ -6,7 +6,7 @@ from flask_mobility.decorators import mobile_template
 from flask_httpauth import HTTPBasicAuth
 from slacker import Slacker
 from respondent import make_answer
-import os, json, configparser, json, csv
+import os, json, configparser, json, csv, ast
 
 
 try:
@@ -61,7 +61,7 @@ def datasets(template):
         data = json.loads(request.data.decode('utf-8').replace('\0', ''))
         return make_response(json.dumps({"answer": data["question"]}), 200, {"content_type": "application/json"})
     else:
-        d = json.dumps(get_datasets())
+        d = json.dumps(get_datasets_info())
         s = json.dumps(get_statistics())
         return render_template(template, datasets=d, statistics=s)
 
@@ -74,7 +74,10 @@ def feedback(template):
         data = json.loads(request.data.decode('utf-8').replace('\0', ''))
         return make_response(json.dumps({"answer": data["question"]}), 200, {"content_type": "application/json"})
     else:
-        return render_template(template)
+        d = json.dumps(get_dataset_names())
+        s = json.dumps(get_statistic_names())
+        t = json.dumps(['number', 'date', 'special'])
+        return render_template(template, dataset_names=d, statistic_names=s, types=t)
 
 
 @auth.get_password
@@ -84,15 +87,29 @@ def get_pw(username):
     return None
 
 
-def get_datasets():
+def get_datasets_info():
     res = []
     with open('datasets/datasets.csv') as csvfile:
         csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
         for row in csvreader:
             if row[3] == "file":
                 continue
-            res.append([row[0], row[1], row[2]])
+            features = ast.literal_eval(row[2])
+            s = ""
+            for feature in features:
+                s += "" + feature["name"] + " (" + feature["type"] + "), "
+            s = s[:-2]
+            res.append([row[0], row[1], s])
     return res
+
+
+def get_dataset(name):
+    with open('datasets/datasets.csv') as csvfile:
+        csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        for row in csvreader:
+            if row[0] == name:
+                return [row[0], row[1], ast.literal_eval(row[2])]
+    return None
 
 
 def get_dataset_names():
@@ -113,9 +130,27 @@ def get_statistics():
         for row in csvreader:
             if row[3] == "file":
                 continue
-            res.append([row[0], row[1], row[2]])
+            templates = ast.literal_eval(row[2])
+            s = ""
+            for template in templates:
+                s += template["question"] + "..."
+                if template["delimiter"] is not None:
+                    s += template["delimiter"] + "..."
+                s += "?  "
+            res.append([row[0], row[1], s])
+    print(res)
     return res
 
+
+def get_statistic_names():
+    res = []
+    with open('statistics/statistics.csv') as csvfile:
+        csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        for row in csvreader:
+            if row[3] == "file":
+                continue
+            res.append(row[0])
+    return res
 
 
 if __name__ == '__main__':
