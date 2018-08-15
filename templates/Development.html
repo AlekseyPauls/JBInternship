@@ -7,17 +7,17 @@
 
     <title>BotStatist</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/styles.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
 
   </head>
   <body class="my-font">
     <div class="topnav">
-      <a href="/" class="topnav-home">Home</a>
+      <a href="/">Home</a>
       <a href="/info">Info</a>
-      <a href="/development">Development</a>
+      <a href="/development" class="topnav-home">Development</a>
     </div>
 
     <div class="navbar-default">
@@ -38,13 +38,13 @@
             <div class="header-label" style="padding: 10px;">Name</div>
             <input type="text" id="datasetName" class="form-control my-input-small">
             <div class="header-label" style="padding: 10px;">Description</div>
-            <textarea id="datasetDescription" class="my-ta-small" style="height: 150px;"></textarea>
+            <textarea id="datasetDescription" class="my-ta-small" style="height: 150px; padding: 10px;"></textarea>
             <div class="header-label" style="padding: 10px;">File</div>
-            <label class="btn btn-success my-btn" style="width: 40%; float: left;">
+            <label class="btn btn-success my-btn" style="width: 30%; float: left;">
                 <input type="file" id="file1" accept="text/" style="display: none;">
-                <span id="import1">fff</span>
+                <span id="import1">Add file</span>
             </label>
-            <input type="text" id="filename1" class="filename my-input-small" style="width: 60%; float: left; height: 40px;" disabled>
+            <input type="text" id="filename1" class="filename my-input-small" style="width: 70%; float: left; height: 40px;" disabled>
             <div class="header-label" style="padding: 10px; margin-top: 50px;">Actions</div>
             <div class="btn-group" style="padding: 5px;">
               <button type="button" id="save1" class="btn btn-success my-btn">Save</button>
@@ -62,11 +62,11 @@
                   <th style="width: 15%; text-align: center;">Action</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
+              <tbody id="tbodyFeatures">
+                <tr id="newFeatureRow">
                   <td><input type="text" id="newFeatureName" class="form-control my-input-small"></td>
                   <td>
-                    <button type="button" id="featureType" class="btn btn-success my-btn">Type</button>
+                    <button type="button" id="typeNew" class="btn btn-success my-btn">Type</button>
                   </td>
                   <td><textarea id="values" class="form-control my-ta-small"></textarea></td>
                   <td><button type="button" id="addFeature" class="btn btn-success my-btn">Add new</button></td>
@@ -88,11 +88,11 @@
             <div class="header-label" style="padding: 10px;">Name</div>
             <input type="text" id="statisticName" class="form-control my-input-small">
             <div class="header-label" style="padding: 10px;">Description</div>
-            <textarea id="statisticDescription" class="my-ta-small" style="height: 150px;"></textarea>
+            <textarea id="statisticDescription" class="my-ta-small" style="height: 150px; padding: 10px;"></textarea>
             <div class="header-label" style="padding: 10px;">File</div>
             <label class="btn btn-success my-btn" style="width: 40%; float: left;">
-                <input type="file2" id="file2" accept="text/" style="display: none;">
-                <span id="import2">fff</span>
+                <input type="text" id="file2" accept="text/" style="display: none;">
+                <span id="import2">Add file</span>
             </label>
             <input type="text" id="filename2" class="filename my-input-small" style="width: 60%; float: left; height: 40px;" disabled>
             <div class="header-label" style="padding: 10px; margin-top: 50px;">Actions</div>
@@ -112,8 +112,8 @@
                   <th style="width: 15%; text-align: center;">Action</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
+              <tbody id="tbodyTemplates">
+                <tr id="newTemplateRow">
                   <td><input type="text" id="newTemplateQuestion" class="form-control my-input-small"></td>
                   <td><input type="text" id="newTemplateDelimiter" class="form-control my-input-small"></td>
                   <td><input type="text" id="newTemplateAnswer" class="form-control my-input-small"></td>
@@ -134,6 +134,7 @@
       <div class="vertical-alignment-helper">
         <div class="modal-dialog vertical-align-center">
           <div class="modal-content">
+            <div id="address" style="display: none;"></div>
             <div class="header-label" style="padding: 15px;">Choose feature type</div>
             <div id="typesList" class="tab-elem modal-body" style="width: 60%; height: 150px;"></div>
             <div class="modal-footer">
@@ -180,7 +181,11 @@
         if (xhr.readyState === 4 && xhr.status === 200) {
           var json = JSON.parse(xhr.responseText)
           console.log(json)
-          $('#answer').text(json['answer'])
+          if (json["action"] === "setDatasetInfo") {
+            setDatasetInfo(json["data"])
+          } else if (json["action"] === "setStatisticInfo") {
+            setStatisticInfo(json["data"])
+          }
         }
       }
 
@@ -189,12 +194,11 @@
         var data = JSON.stringify({"question": name})
         xhr.open("POST", "/", true)
         xhr.setRequestHeader("Content-Type", "application/json")
-        console.log(xhr.status)
         xhr.send(data)
       })
 
-      $('#featureType').on('click', function() {
-        $('#chooseType').modal('show')
+      $('#addFeature').on('click', function() {
+
       })
 
       $("#file1").change(function(){
@@ -208,7 +212,7 @@
       })
 
       $('#typesList').on('click', 'a', function() {
-        $('#featureType').text(this.innerHTML)
+        document.getElementById(document.getElementById('address').innerHTML).innerHTML = this.innerHTML
         $('#chooseType').modal('hide')
       })
 
@@ -217,12 +221,164 @@
           $('#datasetName').val("")
           $('#datasetDescription').val("")
           $('#filename1').val("")
+          var t = document.getElementById("tbodyFeatures")
+          for (var i = t.childNodes.length - 1; i > -1; i--) {
+            if (t.childNodes[i].id !== "newFeatureRow") {
+              t.childNodes[i].remove()
+            }
+          }
         } else {
-          console.log("else")
+          getInfo("Dataset", this.innerHTML)
         }
       })
 
+      $('#statisticsList').on('click', 'a', function() {
+        if (this.id == "new2") {
+          $('#statisticName').val("")
+          $('#statisticDescription').val("")
+          $('#filename2').val("")
+          var t = document.getElementById("tbodyTemplates")
+          for (var i = t.childNodes.length - 1; i > -1; i--) {
+            if (t.childNodes[i].id !== "newTemplateRow") {
+              t.childNodes[i].remove()
+            }
+          }
+        } else {
+          getInfo("Statistic", this.innerHTML)
+        }
+      })
 
+      $('#tbodyFeatures').on('click', 'button', function() {
+        if (this.innerHTML === "Delete") {
+          this.parentNode.parentNode.remove()
+        } else if (this.innerHTML === "Add new") {
+
+        } else {
+          document.getElementById('address').innerHTML = this.id
+          $('#chooseType').modal('show')
+        }
+      })
+
+      $('#tbodyTemplates').on('click', 'button', function() {
+        if (this.innerHTML === "Delete") {
+          this.parentNode.parentNode.remove()
+        }
+      })
+
+      function getInfo(obj, name) {
+        var data = JSON.stringify({"action": "get" + obj + "Info", "name": name})
+        xhr.open("POST", "/development", true)
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(data)
+      }
+
+      function setDatasetInfo(data) {
+        $('#datasetName').val(data["name"])
+        $('#datasetDescription').val(data["description"])
+        $('#filename1').val(data["file"])
+        var t = document.getElementById("tbodyFeatures")
+        for (var i = t.childNodes.length - 1; i > -1; i--) {
+          if (t.childNodes[i].id !== "newFeatureRow") {
+            t.childNodes[i].remove()
+          }
+        }
+        for (var i = 0; i < data["features"].length; i++) {
+          createFeatureRow(data["features"][i]["name"], data["features"][i]["type"], data["features"][i]["values"])
+        }
+      }
+
+      function setStatisticInfo(data) {
+        $('#statisticName').val(data["name"])
+        $('#statisticDescription').val(data["description"])
+        $('#filename2').val(data["file"])
+        var t = document.getElementById("tbodyTemplates")
+        for (var i = t.childNodes.length - 1; i > -1; i--) {
+          if (t.childNodes[i].id !== "newTemplateRow") {
+            t.childNodes[i].remove()
+          }
+        }
+        for (var i = 0; i < data["templates"].length; i++) {
+          createTemplateRow(data["templates"][i]["question"], data["templates"][i]["delimiter"], data["templates"][i]["answer"])
+        }
+      }
+
+      function createFeatureRow(name, type, values) {
+        var tb = document.getElementById("tbodyFeatures")
+        var row = document.createElement("tr")
+
+        var td1 = document.createElement("td")
+        var in1 = document.createElement("input")
+        in1.setAttribute("class", "form-control my-input-small")
+        in1.setAttribute("type", "text")
+        in1.setAttribute("value", name)
+        td1.appendChild(in1)
+
+        var td2 = document.createElement("td")
+        var b2 = document.createElement("button")
+        b2.setAttribute("type", "button")
+        b2.setAttribute("class", "btn btn-success my-btn")
+        b2.innerHTML = type
+        b2.setAttribute("id", "type" + (tb.childNodes.length + 1))
+        td2.appendChild(b2)
+
+        var td3 = document.createElement("td")
+        var ta3 = document.createElement("textarea")
+        ta3.setAttribute("class", "form-control my-ta-small")
+        ta3.innerHTML = values
+        td3.appendChild(ta3)
+
+        var td4 = document.createElement("td")
+        var b4 = document.createElement("button")
+        b4.setAttribute("type", "button")
+        b4.setAttribute("class", "btn btn-success my-btn")
+        b4.innerHTML = "Delete"
+        td4.appendChild(b4)
+
+        row.appendChild(td1)
+        row.appendChild(td2)
+        row.appendChild(td3)
+        row.appendChild(td4)
+        tb.appendChild(row)
+      }
+
+      function createTemplateRow(question, delimiter, answer) {
+        var tb = document.getElementById("tbodyTemplates")
+        var row = document.createElement("tr")
+
+        var td1 = document.createElement("td")
+        var in1 = document.createElement("input")
+        in1.setAttribute("class", "form-control my-input-small")
+        in1.setAttribute("type", "text")
+        in1.setAttribute("value", question)
+        td1.appendChild(in1)
+
+        var td2 = document.createElement("td")
+        var in2 = document.createElement("input")
+        in2.setAttribute("class", "form-control my-input-small")
+        in2.setAttribute("type", "text")
+        in2.setAttribute("value", delimiter)
+        td2.appendChild(in2)
+
+        var td3 = document.createElement("td")
+        var in3 = document.createElement("input")
+        in3.setAttribute("class", "form-control my-input-small")
+        in3.setAttribute("type", "text")
+        in3.setAttribute("value", answer)
+        td3.appendChild(in3)
+
+        var td4 = document.createElement("td")
+        var b4 = document.createElement("button")
+        b4.setAttribute("type", "button")
+        b4.setAttribute("class", "btn btn-success my-btn")
+        b4.innerHTML = "Delete"
+        td4.appendChild(b4)
+
+        row.appendChild(td1)
+        row.appendChild(td2)
+        row.appendChild(td3)
+        row.appendChild(td4)
+        tb.appendChild(row)
+      }
 
       function openTab(evt, tabName) {
         var i, tabcontent, tablinks;

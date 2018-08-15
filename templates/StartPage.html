@@ -7,10 +7,10 @@
 
     <title>BotStatist</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/styles.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
 
   </head>
   <body>
@@ -29,7 +29,7 @@
             <td><input type="text" id="dataset" class="form-control my-input" readonly></td>
             <td id="labelDescription2" class="" align="left" valign="top">
               <div class="dropdown">
-                <button onclick="showHide()" class="btn btn-success my-btn">Choose dataset</button>
+                <button onclick="showHide()" class="btn btn-success my-btn">Choose</button>
                 <div id="datasetsList" class="dropdown-content">
                   <input type="text" placeholder="Search..." id="myInput" class="form-control my-input-small" style="width: 100%;" onkeyup="filterFunction()">
                 </div>
@@ -55,6 +55,13 @@
       var xhr = new XMLHttpRequest()
 
       var datasetNames = JSON.parse('{{dataset_names | safe}}')
+
+      if (datasetNames.length !== 0) {
+        $('#dataset').val(datasetNames[0])
+      } else {
+        $('#dataset').val("Have no datasets")
+      }
+
       for (var i = 0; i < datasetNames.length; i++) {
         var datasetElem = document.createElement("a")
         datasetElem.innerHTML = datasetNames[i]
@@ -67,7 +74,9 @@
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
           var json = JSON.parse(xhr.responseText)
-          $('#answer').text(json['answer'])
+          if (json["action"] === "setAnswer") {
+            $('#answer').text(json['answer'])
+          }
         }
       }
 
