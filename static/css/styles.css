@@ -64,7 +64,7 @@ textarea.my-ta {
 }
 textarea.my-ta-small {
     width: 100%;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: normal;
     min-width: 300px;
 }
@@ -75,7 +75,7 @@ input.my-input {
 }
 
 input.my-input-small {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: normal;
 }
 div.my-text {

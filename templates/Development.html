@@ -167,15 +167,7 @@
       generateList(dataset_names, "datasetsList")
       generateList(statistic_names, "statisticsList")
       generateList(types, "typesList")
-
-      function generateList(list, place) {
-        for (var i = 0; i < list.length; i++) {
-          var listElem = document.createElement("a")
-          listElem.innerHTML = list[i]
-          listElem.className = "lang-label"
-          document.getElementById(place).appendChild(listElem)
-        }
-      }
+      $('#typeNew').text(types[0])
 
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -198,7 +190,11 @@
       })
 
       $('#addFeature').on('click', function() {
+        createFeatureRow($('#newFeatureName').val(), $('#typeNew').text(), $('#values').val())
+      })
 
+      $('#addTemplate').on('click', function() {
+        createTemplateRow($('#newTemplateQuestion').val(), $('#newTemplateDelimiter').val(), $('#newTemplateAnswer').val())
       })
 
       $("#file1").change(function(){
@@ -264,6 +260,15 @@
           this.parentNode.parentNode.remove()
         }
       })
+
+      function generateList(list, place) {
+        for (var i = 0; i < list.length; i++) {
+          var listElem = document.createElement("a")
+          listElem.innerHTML = list[i]
+          listElem.className = "lang-label"
+          document.getElementById(place).appendChild(listElem)
+        }
+      }
 
       function getInfo(obj, name) {
         var data = JSON.stringify({"action": "get" + obj + "Info", "name": name})
