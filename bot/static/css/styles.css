@@ -2,23 +2,28 @@
 
 /* Place that contains other components */
 div.container1 {
+    position: absolute;
     width: 50%;
-    margin-right: auto;
-    margin-left: auto;
+    margin-right: 25%;
+    margin-left: 25%;
     margin-top: 50px;
+    top: 50px;
     text-align: center;
 }
 /* Place that contains other components in the game room */
 div.container2 {
+    position: absolute;
     width: 80%;
-    margin-right: auto;
-    margin-left: auto;
+    margin-right: 10%;
+    margin-left: 10%;
+    margin-top: 50px;
+    top: 50px;
     text-align: center;
 }
 /* Default button */
 .my-btn {
     width: 120px;
-    height: 40px;
+    height: 35px;
     font-size: 16px;
 }
 /* Labels on languages list */
@@ -75,6 +80,7 @@ input.my-input {
 }
 
 input.my-input-small {
+    height: 35px;
     font-size: 16px;
     font-weight: normal;
 }
@@ -111,12 +117,13 @@ div.modal-content {
 
  /* Style the tab */
 .tab {
+    position: fixed;
+    top: 50px;
     float: left;
     border: 1px solid #ccc;
     background-color: #f1f1f1;
-    min-width: 100px;
-    width: 5%;
-    height: 90vh;
+    width: 100px;
+    height: 100%;
 }
 
 /* Style the buttons that are used to open the tab content */
@@ -165,6 +172,7 @@ div.modal-content {
 /* Style the tab content */
 .tabcontent {
     position: absolute;
+    top: 50px;
     left: 100px;
     float: left;
     height: 90%;
@@ -173,8 +181,12 @@ div.modal-content {
 
 /* Add a black background color to the top navigation */
 .topnav {
+    width: 100%;
+    position: fixed;
     background-color: #333;
     overflow: hidden;
+    z-index: 2;
+    height: 50px;
 }
 
 /* Style the links inside the navigation bar */

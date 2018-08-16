@@ -3,24 +3,20 @@ from dateutil import parser
 
 
 def make_answer(question, dataset):
-        current_statistic = {}
-        current_template = {}
         intervals = ["more ", "less ", "before ", "after "]
         connectors = [" and ", " or "]
         statistics = get_statistics()
         features, dataset = get_features(dataset)
 
         question = prepare_question(question)
-        for statistic in statistics:
-            for template in statistic["templates"]:
-                if template["question"] in question and template["delimiter"] in question:
-                    current_statistic = statistic
-                    current_template = template
+
+        current_statistic, current_template, current_delimiter = find_template(statistics, question)
+
         if current_template == {}:
             print("Have no templates")
             exit()
         question = question.replace(current_template["question"], "")
-        args = question.split(current_template["delimiter"])
+        args = question.split(current_delimiter)
 
         args1, connectors1 = find_connectors(args[0], connectors)
         args2, connectors2 = find_connectors(args[1], connectors)
@@ -60,8 +56,15 @@ def prepare_question(question):
     question = question.lower()
     if question[-1] == "?":
         question = question[:-1]
-
     return question
+
+
+def find_template(statistics, question):
+    for statistic in statistics:
+        for template in statistic["templates"]:
+            for delimiter in template["delimiters"]:
+                if template["question"] in question and delimiter in question:
+                    return statistic, template, delimiter
 
 
 def find_connectors(s, cons):
