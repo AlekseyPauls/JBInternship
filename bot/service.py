@@ -14,7 +14,7 @@ def save_dataset(name, descriprion, features, file):
     if dataset:
         dataset.set_description(descriprion)
         dataset.set_features(features)
-        dataset.set_file(file)
+        dataset.set_file(file[0:-4])
         db.session.commit()
     else:
         db.session.add(Datasets(name, descriprion, features, file))
@@ -25,8 +25,8 @@ def save_statistic(name, descriprion, templates, file):
     statistic = Statistics.query.filter_by(name=name).first()
     if statistic:
         statistic.set_description(descriprion)
-        statistic.set_templates(json.dumps(templates))
-        statistic.set_file(file)
+        statistic.set_templates(templates)
+        statistic.set_file(file[0:-3])
         db.session.commit()
     else:
         db.session.add(Statistics(name, descriprion, templates, file))

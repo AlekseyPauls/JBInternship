@@ -209,8 +209,6 @@
 
     <script>
       var xhr = new XMLHttpRequest()
-      $('#filename1').val("")
-      $('#filename2').val("")
 
       var dataset_names = JSON.parse('{{dataset_names | safe}}')
       var statistic_names = JSON.parse('{{statistic_names | safe}}')
@@ -219,6 +217,9 @@
       generateList(statistic_names, "statisticsList")
       generateList(types, "typesList")
       $('#typeNew').text(types[0])
+      clearDatasetInfo()
+      clearStatisticInfo()
+
 
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -229,17 +230,18 @@
           } else if (json["action"] === "setStatisticInfo") {
             setStatisticInfo(json["data"])
           } else if (json["action"] === "reloadDatasets") {
-            generateList(dataset_names, "datasetsList")
-            $('#new1').trigger('click')
+            generateList(JSON.parse(json["datasetNames"]), "datasetsList")
+            clearDatasetInfo()
           } else if (json["action"] === "reloadStatistics") {
-            generateList(statistic_names, "statisticsList")
-            $('#new2').trigger('click')
+            generateList(JSON.parse(json["statisticNames"]), "statisticsList")
+            clearStatisticInfo()
           }
         }
       }
 
       $('#saveDataset').on('click', function() {
-        if (document.getElementById('file1').files[0] !== "") {
+        if (document.getElementById('file1').value !== "") {
+          console.log("Send file")
           var formData = new FormData()
           formData.append('file', document.getElementById('file1').files[0])
           formData.append("action", "saveDatasetFile")
@@ -263,7 +265,8 @@
       })
 
       $('#saveStatistic').on('click', function() {
-        if (document.getElementById('file2').files[0] !== "") {
+        if (document.getElementById('file2').value !== "") {
+          console.log("Send file")
           var formData = new FormData()
           formData.append('file', document.getElementById('file2').files[0])
           formData.append("action", "saveStatisticFile")
@@ -311,29 +314,11 @@
       })
 
       $('#new1').on('click', function() {
-        $('#datasetName').val("")
-        $('#datasetDescription').val("")
-        $('#file1').val("")
-        $('#filename1').val("")
-        var t = document.getElementById("tbodyFeatures")
-        for (var i = t.childNodes.length - 1; i > -1; i--) {
-          if (t.childNodes[i].id !== "newFeatureRow") {
-            t.childNodes[i].remove()
-          }
-        }
+        clearDatasetInfo()
       })
 
       $('#new2').on('click', function() {
-        $('#statisticName').val("")
-        $('#statisticDescription').val("")
-        $('#file2').val("")
-        $('#filename2').val("")
-        var t = document.getElementById("tbodyTemplates")
-        for (var i = t.childNodes.length - 1; i > -1; i--) {
-          if (t.childNodes[i].id !== "newTemplateRow") {
-            t.childNodes[i].remove()
-          }
-        }
+        clearStatisticInfo()
       })
 
       $('#datasetsList').on('click', 'a', function() {
@@ -426,9 +411,9 @@
               values.push(vals[j].slice(1, vals[j].length))
             }
           }
-          console.log(tbody.childNodes)
-          f.push({"question": tbody.childNodes[i].querySelector("input").value,
-                  "answer": tbody.childNodes[i].querySelector("input").value,
+          var tmp = tbody.childNodes[i].querySelectorAll("input")
+          f.push({"question": cleanString(tmp[0].value),
+                  "answer": cleanString(tmp[1].value),
                   "delimiters": values
           })
         }
@@ -570,6 +555,39 @@
 
       function showHide() {
         document.getElementById("typesList").classList.toggle("show")
+      }
+
+      function cleanString(s) {
+        if (s !== "") {
+          s = s.slice(1, -1)
+          return s
+        }
+      }
+
+      function clearDatasetInfo() {
+        $('#datasetName').val("")
+        $('#datasetDescription').val("")
+        $('#file1').val("")
+        $('#filename1').val("")
+        var t = document.getElementById("tbodyFeatures")
+        for (var i = t.childNodes.length - 1; i > -1; i--) {
+          if (t.childNodes[i].id !== "newFeatureRow") {
+            t.childNodes[i].remove()
+          }
+        }
+      }
+
+      function clearStatisticInfo() {
+        $('#statisticName').val("")
+        $('#statisticDescription').val("")
+        $('#file2').val("")
+        $('#filename2').val("")
+        var t = document.getElementById("tbodyTemplates")
+        for (var i = t.childNodes.length - 1; i > -1; i--) {
+          if (t.childNodes[i].id !== "newTemplateRow") {
+            t.childNodes[i].remove()
+          }
+        }
       }
 
       function filterFunction(inp, outp) {

@@ -80,7 +80,8 @@ class Statistics(db.Model):
             dels = dels[:-2]
             if template["delimiters"] is not None:
                 s += " [" + dels + "] ..."
-            s += "?  "
+            s += "?, "
+        print(s)
         return [self.name, self.description, s]
 
     def get_values(self):

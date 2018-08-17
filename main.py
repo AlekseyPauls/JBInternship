@@ -70,16 +70,20 @@ def feedback(template):
             return make_response(json.dumps({"action": "setStatisticInfo", "data": info}), 200, {"content_type": "application/json"})
         elif data["action"] == "saveDataset":
             serv.save_dataset(data["name"], data["description"], data["features"], data["file"])
-            return make_response(json.dumps({"action": "reloadDatasets"}), 200, {"content_type": "application/json"})
+            d = json.dumps(serv.get_dataset_names())
+            return make_response(json.dumps({"action": "reloadDatasets", "datasetNames": d}), 200, {"content_type": "application/json"})
         elif data["action"] == "saveStatistic":
             serv.save_statistic(data["name"], data["description"], data["templates"], data["file"])
-            return make_response(json.dumps({"action": "reloadStatistics"}), 200, {"content_type": "application/json"})
+            s = json.dumps(serv.get_statistic_names())
+            return make_response(json.dumps({"action": "reloadStatistics", "statisticNames": s}), 200, {"content_type": "application/json"})
         elif data["action"] == "deleteDataset":
             serv.delete_dataset(data["name"])
-            return make_response(json.dumps({"action": "reloadDatasets"}), 200, {"content_type": "application/json"})
+            d = json.dumps(serv.get_dataset_names())
+            return make_response(json.dumps({"action": "reloadDatasets", "datasetNames": d}), 200, {"content_type": "application/json"})
         elif data["action"] == "deleteStatistic":
             serv.delete_statistic(data["name"])
-            return make_response(json.dumps({"action": "reloadStatistics"}), 200, {"content_type": "application/json"})
+            s = json.dumps(serv.get_statistic_names())
+            return make_response(json.dumps({"action": "reloadStatistics", "statisticNames": s}), 200, {"content_type": "application/json"})
         return make_response("ok")
     else:
         d = json.dumps(serv.get_dataset_names())
