@@ -1,36 +1,39 @@
 import csv, importlib, collections, ast
 from dateutil import parser
+import bot.service as serv
 
 
 def make_answer(question, dataset):
-        intervals = ["more ", "less ", "before ", "after "]
-        connectors = [" and ", " or "]
-        statistics = get_statistics()
-        features, dataset = get_features(dataset)
+    intervals = ["more ", "less ", "before ", "after "]
+    connectors = [" and ", " or "]
+    statistics = serv.get_statistics()
 
-        question = prepare_question(question)
+    ds = serv.get_dataset(dataset)
+    features, file = ds['features'], ds['file']
 
-        current_statistic, current_template, current_delimiter = find_template(statistics, question)
+    question = prepare_question(question)
 
-        if current_template == {}:
-            print("Have no templates")
-            exit()
-        question = question.replace(current_template["question"], "")
-        args = question.split(current_delimiter)
+    current_statistic, current_template, current_delimiter = find_template(statistics, question)
 
-        args1, connectors1 = find_connectors(args[0], connectors)
-        args2, connectors2 = find_connectors(args[1], connectors)
-        args1 = find_features(args1, features, intervals)
-        args2 = find_features(args2, features, intervals)
+    if current_template == {}:
+        print("Have no templates")
+        exit()
+    question = question.replace(current_template["question"], "")
+    args = question.split(current_delimiter)
 
-        print("Template: " + str(current_template) + "\nArgs1: " + str(args1) + "\nConnectors1: " + str(
-            connectors1) + "\nArgs2: " + str(args2) + "\nConnectors2: " + str(connectors2))
+    args1, connectors1 = find_connectors(args[0], connectors)
+    args2, connectors2 = find_connectors(args[1], connectors)
+    args1 = find_features(args1, features, intervals)
+    args2 = find_features(args2, features, intervals)
 
-        stat = importlib.import_module("statistics." + current_statistic["file"])
-        calc = getattr(stat, "calc")
-        res = calc(current_template, dataset, args1, connectors1, args2, connectors2)
+    print("Template: " + str(current_template) + "\nArgs1: " + str(args1) + "\nConnectors1: " + str(
+        connectors1) + "\nArgs2: " + str(args2) + "\nConnectors2: " + str(connectors2))
 
-        return res
+    stat = importlib.import_module("statistics." + current_statistic["file"])
+    calc = getattr(stat, "calc")
+    res = calc(current_template, file, args1, connectors1, args2, connectors2)
+
+    return res
 
 
 def get_statistics():
@@ -53,7 +56,7 @@ def get_features(dataset):
 
 
 def prepare_question(question):
-    question = question.lower()
+    #question = question.lower()
     if question[-1] == "?":
         question = question[:-1]
     return question

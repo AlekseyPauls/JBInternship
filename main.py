@@ -2,8 +2,8 @@ from flask import request
 from flask import make_response, render_template
 from flask_mobility.decorators import mobile_template
 import os, json, csv, ast
-from bot.respondent import make_answer
 from bot import app, slack, auth, ADMIN, PASSWORD
+from bot.respondent import make_answer
 import bot.service as serv
 
 
@@ -53,8 +53,13 @@ def datasets(template):
 @mobile_template('{mobile/}Development.html')
 def feedback(template):
     if request.method == 'POST':
-        if request.headers["Content-Type"] == "application/form-data":
-            print(request.args)
+        if "multipart/form-data" in request.headers["Content-Type"]:
+            if request.values["action"] == "saveDatasetFile":
+                file = request.files["file"]
+                file.save("datasets/" + file.filename)
+            elif request.values["action"] == "saveStatisticFile":
+                file = request.files["file"]
+                file.save("statistics/" + file.filename)
             return make_response("ok")
         data = json.loads(request.data.decode('utf-8').replace('\0', ''))
         if data["action"] == "getDatasetInfo":
@@ -64,10 +69,17 @@ def feedback(template):
             info = serv.get_statistic(data["name"])
             return make_response(json.dumps({"action": "setStatisticInfo", "data": info}), 200, {"content_type": "application/json"})
         elif data["action"] == "saveDataset":
-            print(str(data))
-            print(data["name"] + " " + str(data["features"]) + " " + str(data["description"]) + " " + str(data["file"]))
-            print(request.files["file"])
-            return make_response("ok")
+            serv.save_dataset(data["name"], data["description"], data["features"], data["file"])
+            return make_response(json.dumps({"action": "reloadDatasets"}), 200, {"content_type": "application/json"})
+        elif data["action"] == "saveStatistic":
+            serv.save_statistic(data["name"], data["description"], data["templates"], data["file"])
+            return make_response(json.dumps({"action": "reloadStatistics"}), 200, {"content_type": "application/json"})
+        elif data["action"] == "deleteDataset":
+            serv.delete_dataset(data["name"])
+            return make_response(json.dumps({"action": "reloadDatasets"}), 200, {"content_type": "application/json"})
+        elif data["action"] == "deleteStatistic":
+            serv.delete_statistic(data["name"])
+            return make_response(json.dumps({"action": "reloadStatistics"}), 200, {"content_type": "application/json"})
         return make_response("ok")
     else:
         d = json.dumps(serv.get_dataset_names())

@@ -17,11 +17,21 @@ class Datasets(db.Model):
     def __repr__(self):
         return self.name + " ; " + self.description + " ; " + self.features + " ; " + self.file
 
+    def set_description(self, description):
+        self.description = description
+
+    def set_features(self, features):
+        print(type(features))
+        self.features = features
+
+    def set_file(self, file):
+        self.file = file
+
     def get_name(self):
         return self.name
 
     def get_info(self):
-        features = ast.literal_eval(self.features)
+        features = self.features
         s = ""
         for feature in features:
             s += "" + feature["name"] + " (" + feature["type"] + "), "
@@ -29,7 +39,7 @@ class Datasets(db.Model):
         return [self.name, self.description, s]
 
     def get_values(self):
-        return {"name": self.name, "description": self.description, "features": ast.literal_eval(self.features), "file": self.file}
+        return {"name": self.name, "description": self.description, "features": self.features, "file": self.file}
 
 
 class Statistics(db.Model):
@@ -47,11 +57,20 @@ class Statistics(db.Model):
     def __repr__(self):
         return self.name + " ; " + self.description + " ; " + self.templates + " ; " + self.file
 
+    def set_description(self, description):
+        self.description = description
+
+    def set_templates(self, templates):
+        self.templates = templates
+
+    def set_file(self, file):
+        self.file = file
+
     def get_name(self):
         return self.name
 
     def get_info(self):
-        templates = ast.literal_eval(self.templates)
+        templates = self.templates
         s = ""
         for template in templates:
             s += template["question"] + "..."
@@ -65,4 +84,4 @@ class Statistics(db.Model):
         return [self.name, self.description, s]
 
     def get_values(self):
-        return {"name": self.name, "description": self.description, "templates": ast.literal_eval(self.templates), "file": self.file}
+        return {"name": self.name, "description": self.description, "templates": self.templates, "file": self.file}

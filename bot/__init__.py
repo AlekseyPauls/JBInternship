@@ -4,7 +4,6 @@ from flask_httpauth import HTTPBasicAuth
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource, Api
 from slacker import Slacker
-from bot.respondent import make_answer
 import configparser, os
 
 try:
@@ -20,8 +19,8 @@ except Exception:
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-#app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///bot"
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///bot"
 auth = HTTPBasicAuth()
 Mobility(app)
 slack = Slacker(SLACK_TOKEN)

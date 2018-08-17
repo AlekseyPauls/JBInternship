@@ -41,7 +41,7 @@
             <textarea id="datasetDescription" class="my-ta-small" style="height: 150px; padding: 10px;"></textarea>
             <div class="header-label" style="padding: 10px;">File</div>
             <label class="btn btn-success my-btn" style="width: 30%; float: left;">
-                <input type="file" id="file1" accept="text/" class="file-input" style="display: none;">
+                <input type="file" id="file1" accept="text/" class="file-input" value="" style="display: none;">
                 <span id="import1">Add file</span>
             </label>
             <input type="text" id="filename1" class="filename my-input-small" style="width: 70%; float: left;" disabled>
@@ -94,7 +94,7 @@
             <textarea id="statisticDescription" class="my-ta-small" style="height: 150px; padding: 10px;"></textarea>
             <div class="header-label" style="padding: 10px;">File</div>
             <label class="btn btn-success my-btn" style="width: 40%; float: left;">
-                <input type="text" id="file2" accept="text/" class="file-input" style="display: none;">
+                <input type="file" id="file2" accept="text/" class="file-input" style="display: none;">
                 <span id="import2">Add file</span>
             </label>
             <input type="text" id="filename2" class="filename my-input-small" style="width: 60%; float: left; height: 40px;" disabled>
@@ -209,6 +209,8 @@
 
     <script>
       var xhr = new XMLHttpRequest()
+      $('#filename1').val("")
+      $('#filename2').val("")
 
       var dataset_names = JSON.parse('{{dataset_names | safe}}')
       var statistic_names = JSON.parse('{{statistic_names | safe}}')
@@ -226,25 +228,73 @@
             setDatasetInfo(json["data"])
           } else if (json["action"] === "setStatisticInfo") {
             setStatisticInfo(json["data"])
+          } else if (json["action"] === "reloadDatasets") {
+            generateList(dataset_names, "datasetsList")
+            $('#new1').trigger('click')
+          } else if (json["action"] === "reloadStatistics") {
+            generateList(statistic_names, "statisticsList")
+            $('#new2').trigger('click')
           }
         }
       }
 
       $('#saveDataset').on('click', function() {
+        if (document.getElementById('file1').files[0] !== "") {
+          var formData = new FormData()
+          formData.append('file', document.getElementById('file1').files[0])
+          formData.append("action", "saveDatasetFile")
+          $.ajax({
+              url: '/development',
+              data: formData,
+              type: 'POST',
+              contentType: false,
+              cache: false,
+              processData: false,
+              async: true
+          })
+        }
 
-
-        var formData = new FormData()
-        formData.append('file', document.getElementById('file1').files[0])
-        formData.append("action", "saveDataset")
-        xhr.open("POST", "/development", true)
-        xhr.setRequestHeader("Content-Type", "application/form-data")
-        xhr.send(formData)
-
-
-        var name = $('#question').val()
         f = saveFeatures()
         var data = JSON.stringify({"action": "saveDataset", "name": $('#datasetName').val(),
-          "description": $('#datasetDescription').val(), "features": f, "file": document.getElementById('file1').files[0]})
+          "description": $('#datasetDescription').val(), "features": f, "file": $('#filename1').val()})
+        xhr.open("POST", "/development", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.send(data)
+      })
+
+      $('#saveStatistic').on('click', function() {
+        if (document.getElementById('file2').files[0] !== "") {
+          var formData = new FormData()
+          formData.append('file', document.getElementById('file2').files[0])
+          formData.append("action", "saveStatisticFile")
+          $.ajax({
+              url: '/development',
+              data: formData,
+              type: 'POST',
+              contentType: false,
+              cache: false,
+              processData: false,
+              async: true
+          })
+        }
+
+        f = saveTemplates()
+        var data = JSON.stringify({"action": "saveStatistic", "name": $('#statisticName').val(),
+          "description": $('#statisticDescription').val(), "templates": f, "file": $('#filename2').val()})
+        xhr.open("POST", "/development", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.send(data)
+      })
+
+      $('#deleteDataset').on('click', function() {
+        var data = JSON.stringify({"action": "deleteDataset", "name": $('#datasetName').val()})
+        xhr.open("POST", "/development", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.send(data)
+      })
+
+      $('#deleteStatistic').on('click', function() {
+        var data = JSON.stringify({"action": "deleteStatistic", "name": $('#datasetName').val()})
         xhr.open("POST", "/development", true)
         xhr.setRequestHeader("Content-Type", "application/json")
         xhr.send(data)
@@ -255,40 +305,47 @@
        $("#filename" + this.id[4]).val(filename)
       })
 
-
       $('#typesList').on('click', 'a', function() {
         document.getElementById(document.getElementById('address').innerHTML).innerHTML = this.innerHTML
         $('#chooseType').modal('hide')
       })
 
-      $('#datasetsList').on('click', 'a', function() {
-        if (this.id == "new1") {
-          $('#datasetName').val("")
-          $('#datasetDescription').val("")
-          $('#filename1').val("")
-          var t = document.getElementById("tbodyFeatures")
-          for (var i = t.childNodes.length - 1; i > -1; i--) {
-            if (t.childNodes[i].id !== "newFeatureRow") {
-              t.childNodes[i].remove()
-            }
+      $('#new1').on('click', function() {
+        $('#datasetName').val("")
+        $('#datasetDescription').val("")
+        $('#file1').val("")
+        $('#filename1').val("")
+        var t = document.getElementById("tbodyFeatures")
+        for (var i = t.childNodes.length - 1; i > -1; i--) {
+          if (t.childNodes[i].id !== "newFeatureRow") {
+            t.childNodes[i].remove()
           }
-        } else {
+        }
+      })
+
+      $('#new2').on('click', function() {
+        $('#statisticName').val("")
+        $('#statisticDescription').val("")
+        $('#file2').val("")
+        $('#filename2').val("")
+        var t = document.getElementById("tbodyTemplates")
+        for (var i = t.childNodes.length - 1; i > -1; i--) {
+          if (t.childNodes[i].id !== "newTemplateRow") {
+            t.childNodes[i].remove()
+          }
+        }
+      })
+
+      $('#datasetsList').on('click', 'a', function() {
+        if (this.id !== "new1") {
+          $('#file1').val("")
           getInfo("Dataset", this.innerHTML)
         }
       })
 
       $('#statisticsList').on('click', 'a', function() {
-        if (this.id == "new2") {
-          $('#statisticName').val("")
-          $('#statisticDescription').val("")
-          $('#filename2').val("")
-          var t = document.getElementById("tbodyTemplates")
-          for (var i = t.childNodes.length - 1; i > -1; i--) {
-            if (t.childNodes[i].id !== "newTemplateRow") {
-              t.childNodes[i].remove()
-            }
-          }
-        } else {
+        if (this.id !== "new2") {
+          $('#file2').val("")
           getInfo("Statistic", this.innerHTML)
         }
       })
@@ -315,11 +372,15 @@
       })
 
       function generateList(list, place) {
+        pl = document.getElementById(place)
+        for (var i = pl.childNodes.length - 1; i > 5; i--) {
+          pl.childNodes[i].remove()
+        }
         for (var i = 0; i < list.length; i++) {
           var listElem = document.createElement("a")
           listElem.innerHTML = list[i]
           listElem.className = "lang-label"
-          document.getElementById(place).appendChild(listElem)
+          pl.appendChild(listElem)
         }
       }
 
@@ -343,10 +404,33 @@
               values.push(vals[j].slice(1, vals[j].length))
             }
           }
+          console.log(tbody.childNodes)
           f.push({"name": tbody.childNodes[i].querySelector("input").value,
                   "type": tbody.childNodes[i].querySelector("button").innerHTML,
                   "values": values
-                  })
+          })
+        }
+        return f
+      }
+
+      function saveTemplates() {
+        var f = []
+        var tbody = document.getElementById("tbodyTemplates")
+        for (var i = 1; i < tbody.childNodes.length; i++) {
+          var values = []
+          var vals = tbody.childNodes[i].querySelector("textarea").value.split("\"\n")
+          for (var j = 0; j < vals.length; j++) {
+            if (j + 1 === vals.length) {
+              values.push(vals[j].slice(1, -1))
+            } else if (vals[j] !== "") {
+              values.push(vals[j].slice(1, vals[j].length))
+            }
+          }
+          console.log(tbody.childNodes)
+          f.push({"question": tbody.childNodes[i].querySelector("input").value,
+                  "answer": tbody.childNodes[i].querySelector("input").value,
+                  "delimiters": values
+          })
         }
         return f
       }
@@ -354,6 +438,7 @@
       function setDatasetInfo(data) {
         $('#datasetName').val(data["name"])
         $('#datasetDescription').val(data["description"])
+        $('#file1').val("")
         $('#filename1').val(data["file"])
         var t = document.getElementById("tbodyFeatures")
         for (var i = t.childNodes.length - 1; i > -1; i--) {
@@ -374,6 +459,7 @@
       function setStatisticInfo(data) {
         $('#statisticName').val(data["name"])
         $('#statisticDescription').val(data["description"])
+        $('#file2').val("")
         $('#filename2').val(data["file"])
         var t = document.getElementById("tbodyTemplates")
         for (var i = t.childNodes.length - 1; i > -1; i--) {
