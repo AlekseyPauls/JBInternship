@@ -139,6 +139,7 @@ def variants(word):
 
 
 def clean(s):
+    print("Clean " + s)
     if s == "":
         return s
     if s[0] == " ":
