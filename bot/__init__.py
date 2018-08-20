@@ -2,7 +2,6 @@ from flask import Flask
 from flask_mobility import Mobility
 from flask_httpauth import HTTPBasicAuth
 from flask_sqlalchemy import SQLAlchemy
-from flask_restful import Resource, Api
 from slacker import Slacker
 import configparser, os
 
@@ -25,4 +24,3 @@ auth = HTTPBasicAuth()
 Mobility(app)
 slack = Slacker(SLACK_TOKEN)
 db = SQLAlchemy(app)
-api = Api(app)
