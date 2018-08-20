@@ -21,7 +21,6 @@ class Datasets(db.Model):
         self.description = description
 
     def set_features(self, features):
-        print(type(features))
         self.features = features
 
     def set_file(self, file):
@@ -29,6 +28,9 @@ class Datasets(db.Model):
 
     def get_name(self):
         return self.name
+
+    def get_features(self):
+        return self.features
 
     def get_info(self):
         features = self.features
@@ -81,7 +83,6 @@ class Statistics(db.Model):
             if template["delimiters"] is not None:
                 s += " [" + dels + "] ..."
             s += "?, "
-        print(s)
         return [self.name, self.description, s]
 
     def get_values(self):

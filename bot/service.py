@@ -1,12 +1,44 @@
-import os, json, csv, ast
+import os, json, csv, ast, collections
 from bot.models import Datasets, Statistics
 from bot import db
 
 
-db.create_all()
 # db.session.add(Statistics("Mean", "Mean", "[{'question': 'what is mean ', 'delimiters': [' in ']}]", "mean.py"))
 # db.session.add(Statistics("In", "In", "[{'question': 'in which ', 'delimiters': [' were ', ' was '], 'answer': 'In <>.'}]", "in.py"))
 # db.session.commit()
+
+
+def find_dataset(question):
+    ds = {}
+    for dataset in Datasets.query.all():
+        ds_name = dataset.get_name()
+        ds[ds_name] = 0
+        for feature in dataset.get_features():
+            for name in variants(feature["name"]):
+                if name in question:
+                    ds[ds_name] += 1
+                    break
+        if ds[ds_name] == 0:
+            del ds[ds_name]
+    sorted_ds = collections.OrderedDict(reversed(sorted(ds.items(), key=lambda t: t[1])))
+    print(sorted_ds)
+    l = list(sorted_ds.keys())
+    if len(l) >= 3:
+        if (ds[l[0]] - (ds[l[0]] + ds[l[1]] + ds[l[2]]) / 3) <= 1:
+            return {"type": "choose", "dataset": [l[0], l[1], l[2]]}
+        if (ds[l[0]] - ds[l[1]]) <= 1:
+            return {"type": "choose", "dataset": [l[0], l[1]]}
+        else:
+            return {"type": "one", "dataset": l[0]}
+    elif len(l) == 2:
+        if (ds[l[0]] - ds[l[1]]) <= 1:
+            return {"type": "choose", "dataset": [l[0], l[1]]}
+        else:
+            return {"type": "one", "dataset": l[0]}
+    elif len(l) == 1:
+        return {"type": "one", "dataset": l[0]}
+    else:
+        return {"type": "none"}
 
 
 def save_dataset(name, descriprion, features, file):
@@ -14,7 +46,7 @@ def save_dataset(name, descriprion, features, file):
     if dataset:
         dataset.set_description(descriprion)
         dataset.set_features(features)
-        dataset.set_file(file[0:-4])
+        dataset.set_file(file)
         db.session.commit()
     else:
         db.session.add(Datasets(name, descriprion, features, file))
@@ -26,7 +58,7 @@ def save_statistic(name, descriprion, templates, file):
     if statistic:
         statistic.set_description(descriprion)
         statistic.set_templates(templates)
-        statistic.set_file(file[0:-3])
+        statistic.set_file(file)
         db.session.commit()
     else:
         db.session.add(Statistics(name, descriprion, templates, file))
@@ -94,3 +126,23 @@ def get_statistic_names():
     for statistic in Statistics.query.all():
         res.append(statistic.get_name())
     return res
+
+
+def variants(word):
+    res = []
+    res.append(" " + word + " ")
+    res.append(" " + word + ",")
+    res.append("(" + word + " ")
+    res.append(" " + word + ")")
+    res.append("(" + word + ")")
+    return res
+
+
+def clean(s):
+    if s == "":
+        return s
+    if s[0] == " ":
+        s = s[1:]
+    if s[-1] == " ":
+        s = s[:-1]
+    return s

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/static/css/styles.css">
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
+      <script src="/static/js/papaparse.min.js"></script>
 
   </head>
   <body class="my-font">
@@ -41,7 +42,7 @@
             <textarea id="datasetDescription" class="my-ta-small" style="height: 150px; padding: 10px;"></textarea>
             <div class="header-label" style="padding: 10px;">File</div>
             <label class="btn btn-success my-btn" style="width: 30%; float: left;">
-                <input type="file" id="file1" accept="text/" class="file-input" value="" style="display: none;">
+                <input type="file" id="file1" accept="text/csv" class="file-input" style="display: none;">
                 <span id="import1">Add file</span>
             </label>
             <input type="text" id="filename1" class="filename my-input-small" style="width: 70%; float: left;" disabled>
@@ -93,11 +94,11 @@
             <div class="header-label" style="padding: 10px;">Description</div>
             <textarea id="statisticDescription" class="my-ta-small" style="height: 150px; padding: 10px;"></textarea>
             <div class="header-label" style="padding: 10px;">File</div>
-            <label class="btn btn-success my-btn" style="width: 40%; float: left;">
-                <input type="file" id="file2" accept="text/" class="file-input" style="display: none;">
+            <label class="btn btn-success my-btn" style="width: 30%; float: left;">
+                <input type="file" id="file2" accept=".py" class="file-input" style="display: none;">
                 <span id="import2">Add file</span>
             </label>
-            <input type="text" id="filename2" class="filename my-input-small" style="width: 60%; float: left; height: 40px;" disabled>
+            <input type="text" id="filename2" class="filename my-input-small" style="width: 70%; float: left; height: 35px;" disabled>
             <div class="header-label" style="padding: 10px; margin-top: 50px;">Actions</div>
             <div class="btn-group" style="padding: 5px;">
               <button type="button" id="saveStatistic" class="btn btn-success my-btn">Save</button>
@@ -109,9 +110,9 @@
             <table class="table table-striped table-bordered" style="width: 100%">
               <thead>
                 <tr>
-                  <th style="width: 20%; text-align: center;">Question</th>
-                  <th style="width: 45%; text-align: center;">Delimiters</th>
-                  <th style="width: 20%; text-align: center;">Answer</th>
+                  <th style="width: 25%; text-align: center;">Question</th>
+                  <th style="width: 35%; text-align: center;">Delimiters</th>
+                  <th style="width: 25%; text-align: center;">Answer</th>
                   <th style="width: 15%; text-align: center;">Action</th>
                 </tr>
               </thead>
@@ -120,7 +121,10 @@
                   <td><input type="text" id="newTemplateQuestion" class="form-control my-input-small"></td>
                   <td><textarea id="newTemplateDelimiters" class="form-control my-ta-small"></textarea></td>
                   <td><input type="text" id="newTemplateAnswer" class="form-control my-input-small"></td>
-                  <td><button type="button" id="addTemplate" class="btn btn-success my-btn">Add new</button></td>
+                  <td>
+                    <button type="button" id="addTemplate" class="btn btn-success my-btn">Add new</button>
+                    <button type="button" id="importTemplates" class="btn btn-info my-btn">Import</button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -148,45 +152,22 @@
       </div>
     </div>
 
-    <div id="importFeaturesModal" class="modal fade my-font" role="dialog">
+    <div id="importTemplatesModal" class="modal fade my-font" role="dialog">
       <div class="vertical-alignment-helper">
         <div class="modal-dialog vertical-align-center">
           <div class="modal-content">
             <div style="padding: 50px;">
               <div class="header-label" style="padding: 10px;">Choose file with features</div>
               <label class="btn btn-success my-btn" style="width: 20%; float: left;">
-                  <input type="file" id="file3" accept="text/" class="file-input" style="display: none;">
+                  <input type="file" id="file3" accept="text/csv" class="file-input" style="display: none;">
                   <span id="import3">Add file</span>
               </label>
               <input type="text" id="filename3" class="filename my-input-small" style="width: 80%; float: left;" disabled>
             </div>
             <div class="modal-footer">
               <div class="btn-group" style="padding: 5px;">
-                <button id="importFeaturesFromFile" type="button" class="btn btn-success my-btn" data-dismiss="modal">Import</button>
-                <button id="close3" type="button" class="btn btn-info my-btn" data-dismiss="modal">Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="importTemplatesModal" class="modal fade my-font" role="dialog">
-      <div class="vertical-alignment-helper">
-        <div class="modal-dialog vertical-align-center">
-          <div class="modal-content">
-            <div style="padding: 50px;">
-              <div class="header-label" style="padding: 10px;">Choose file with templates</div>
-              <label class="btn btn-success my-btn" style="width: 20%; float: left;">
-                  <input type="file" id="file4" class="file-input" accept="text/" style="display: none;">
-                  <span id="import4">Add file</span>
-              </label>
-              <input type="text" id="filename4" class="filename my-input-small" style="width: 80%; float: left;" disabled>
-            </div>
-            <div class="modal-footer">
-              <div class="btn-group" style="padding: 5px;">
                 <button id="importTemplatesFromFile" type="button" class="btn btn-success my-btn" data-dismiss="modal">Import</button>
-                <button id="close4" type="button" class="btn btn-info my-btn" data-dismiss="modal">Close</button>
+                <button id="close3" type="button" class="btn btn-info my-btn" data-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
@@ -335,11 +316,56 @@
         }
       })
 
+      $('#importFeatures').on('click', function() {
+        Papa.parse(document.getElementById('file1').files[0], {delimiter:',', dynamicTyping:true, skipEmptyLines:true,
+          complete: function(results) {
+            for (var i = 0; i < results["data"].length; i++) {
+              if (i === 0) {
+                for (var j = 0; j < results["data"][i].length; j++) {
+                  createFeatureRow(results["data"][i][j], "number", "")
+                }
+              } else {
+                for (var j = 0; j < results["data"][i].length; j++) {
+                  updateFeatureRow(results["data"][i][j], j)
+                }
+              }
+            }
+            for (var j = 0; j < results["data"][0].length; j++) {
+              updateFeatureRow(null, j)
+            }
+          }
+        })
+      })
+
+      $('#importTemplates').on('click', function() {
+        $('#importTemplatesModal').modal('show')
+      })
+
+      $('#importTemplatesFromFile').on('click', function() {
+        Papa.parse(document.getElementById('file3').files[0], {delimiter:',', dynamicTyping:true, skipEmptyLines:true,
+          complete: function(results) {
+            for (var i = 0; i < results["data"].length; i++) {
+              if (i !== 0) {
+                var s = ""
+                console.log(results["data"][i][1])
+                var delimiters = JSON.parse(results["data"][i][1].replace(/'/g, '"'))
+                for (var j = 0; j < delimiters.length; j++) {
+                  s += "\"" + delimiters[j] + "\", "
+                }
+                s = s.slice(0, -2)
+                createTemplateRow(results["data"][i][0], s, results["data"][i][2])
+              }
+            }
+          }
+        })
+      })
+
       $('#tbodyFeatures').on('click', 'button', function() {
         if (this.innerHTML === "Delete") {
           this.parentNode.parentNode.remove()
         } else if (this.innerHTML === "Add new") {
           createFeatureRow($('#newFeatureName').val(), $('#typeNew').text(), $('#values').val())
+          clearNewFeature()
         } else if (this.innerHTML === "Import") {
           $('#importFeaturesModal').modal('show')
         } else {
@@ -353,6 +379,7 @@
           this.parentNode.parentNode.remove()
         } else if (this.innerHTML === "Add new") {
           createTemplateRow($('#newTemplateQuestion').val(), $('#newTemplateDelimiters').val(), $('#newTemplateAnswer').val())
+          clearNewTemplate()
         }
       })
 
@@ -381,7 +408,7 @@
         var tbody = document.getElementById("tbodyFeatures")
         for (var i = 1; i < tbody.childNodes.length; i++) {
           var values = []
-          var vals = tbody.childNodes[i].querySelector("textarea").value.split("\"\n")
+          var vals = tbody.childNodes[i].querySelector("textarea").value.split("\", ")
           for (var j = 0; j < vals.length; j++) {
             if (j + 1 === vals.length) {
               values.push(vals[j].slice(1, -1))
@@ -403,7 +430,7 @@
         var tbody = document.getElementById("tbodyTemplates")
         for (var i = 1; i < tbody.childNodes.length; i++) {
           var values = []
-          var vals = tbody.childNodes[i].querySelector("textarea").value.split("\"\n")
+          var vals = tbody.childNodes[i].querySelector("textarea").value.split("\", ")
           for (var j = 0; j < vals.length; j++) {
             if (j + 1 === vals.length) {
               values.push(vals[j].slice(1, -1))
@@ -434,9 +461,9 @@
         for (var i = 0; i < data["features"].length; i++) {
           var s = ""
           for (var j = 0; j < data["features"][i]["values"].length; j++) {
-            s += "\"" + data["features"][i]["values"][j] + "\"\n"
+            s += "\"" + data["features"][i]["values"][j] + "\", "
           }
-          s = s.slice(0, -1)
+          s = s.slice(0, -2)
           createFeatureRow(data["features"][i]["name"], data["features"][i]["type"], s)
         }
       }
@@ -455,9 +482,9 @@
         for (var i = 0; i < data["templates"].length; i++) {
           var s = ""
           for (var j = 0; j < data["templates"][i]["delimiters"].length; j++) {
-            s += "\"" + data["templates"][i]["delimiters"][j] + "\"\n"
+            s += "\"" + data["templates"][i]["delimiters"][j] + "\", "
           }
-          s = s.slice(0, -1)
+          s = s.slice(0, -2)
           createTemplateRow("\"" + data["templates"][i]["question"] + "\"", s, "\"" + data["templates"][i]["answer"] + "\"")
         }
       }
@@ -465,6 +492,7 @@
       function createFeatureRow(name, type, values) {
         var tb = document.getElementById("tbodyFeatures")
         var row = document.createElement("tr")
+        row.setAttribute("id", "row" + (tb.childNodes.length - 1))
 
         var td1 = document.createElement("td")
         var in1 = document.createElement("input")
@@ -539,6 +567,20 @@
         tb.appendChild(row)
       }
 
+      function updateFeatureRow(value, rowId) {
+        var row = document.getElementById("row" + rowId)
+        var ta = row.querySelector("textarea")
+        var type = row.querySelector("button")
+        if (value === null) {
+          ta.value = ta.value.slice(0, -2)
+        } else if (ta.value.indexOf(value) === -1) {
+          ta.value += "\"" + value + "\", "
+          if (!isNumeric(value) && type.innerHTML !== "Special") {
+            type.innerHTML = "special"
+          }
+        }
+      }
+
       function openTab(evt, tabName) {
         var i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tabcontent")
@@ -575,6 +617,7 @@
             t.childNodes[i].remove()
           }
         }
+        clearNewFeature()
       }
 
       function clearStatisticInfo() {
@@ -588,6 +631,19 @@
             t.childNodes[i].remove()
           }
         }
+        clearNewTemplate()
+      }
+
+      function clearNewFeature() {
+        $('#newFeatureName').val("")
+        $('#typeNew').text(types[0])
+        $('#values').val("")
+      }
+
+      function clearNewTemplate() {
+        $('#newTemplateQuestion').val("")
+        $('#newTemplateDelimiters').val("")
+        $('#newTemplateAnswer').val("")
       }
 
       function filterFunction(inp, outp) {
@@ -603,6 +659,10 @@
             a[i].style.display = "none"
           }
         }
+      }
+
+      function isNumeric(num){
+        return !isNaN(num)
       }
     </script>
   </body>

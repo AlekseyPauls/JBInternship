@@ -2,7 +2,7 @@ from flask import request
 from flask import make_response, render_template
 from flask_mobility.decorators import mobile_template
 import os, json, csv, ast
-from bot import app, slack, auth, ADMIN, PASSWORD
+from bot import app, slack, auth, ADMIN, PASSWORD, SLACK_TOKEN
 from bot.respondent import make_answer
 import bot.service as serv
 
@@ -18,7 +18,8 @@ def hello_slack():
         if "subtype" in slack_event:
             return make_response("ok", 200, {"content_type": "application/json"})
         else:
-            slack.chat.post_message(slack_event["channel"], slack_event["text"])
+            answer = make_answer(slack_event["text"], "")
+            slack.chat.post_message(slack_event["channel"], answer)
             return make_response("ok", 200, {"content_type": "application/json"})
 
 
