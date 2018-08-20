@@ -71,7 +71,7 @@ textarea.my-ta-small {
     width: 100%;
     font-size: 16px;
     font-weight: normal;
-    min-width: 300px;
+    min-width: 200px;
 }
 /* Field for text input (deck name) */
 input.my-input {

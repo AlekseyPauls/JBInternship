@@ -57,15 +57,17 @@
             <table class="table table-striped table-bordered" style="width: 100%">
               <thead>
                 <tr>
-                  <th style="width: 25%; text-align: center;">Name</th>
+                  <th style="width: 20%; text-align: center;">Name</th>
+                  <th style="width: 25%; text-align: center;">Synonyms</th>
                   <th style="width: 15%; text-align: center;">Type</th>
-                  <th style="width: 45%; text-align: center;">Values</th>
+                  <th style="width: 25%; text-align: center;">Values</th>
                   <th style="width: 15%; text-align: center;">Action</th>
                 </tr>
               </thead>
               <tbody id="tbodyFeatures">
                 <tr id="newFeatureRow">
                   <td><input type="text" id="newFeatureName" class="form-control my-input-small"></td>
+                  <td><textarea id="newFeatureSynonyms" class="form-control my-ta-small"></textarea></td>
                   <td>
                     <button type="button" id="typeNew" class="btn btn-success my-btn">Type</button>
                   </td>
@@ -322,7 +324,7 @@
             for (var i = 0; i < results["data"].length; i++) {
               if (i === 0) {
                 for (var j = 0; j < results["data"][i].length; j++) {
-                  createFeatureRow(results["data"][i][j], "number", "")
+                  createFeatureRow(results["data"][i][j], "", "number", "")
                 }
               } else {
                 for (var j = 0; j < results["data"][i].length; j++) {
@@ -364,7 +366,7 @@
         if (this.innerHTML === "Delete") {
           this.parentNode.parentNode.remove()
         } else if (this.innerHTML === "Add new") {
-          createFeatureRow($('#newFeatureName').val(), $('#typeNew').text(), $('#values').val())
+          createFeatureRow($('#newFeatureName').val(), $('#newFeatureSynonyms').val(), $('#typeNew').text(), $('#values').val())
           clearNewFeature()
         } else if (this.innerHTML === "Import") {
           $('#importFeaturesModal').modal('show')
@@ -408,7 +410,7 @@
         var tbody = document.getElementById("tbodyFeatures")
         for (var i = 1; i < tbody.childNodes.length; i++) {
           var values = []
-          var vals = tbody.childNodes[i].querySelector("textarea").value.split("\", ")
+          var vals = tbody.childNodes[i].querySelectorAll("textarea")[1].value.split("\", ")
           for (var j = 0; j < vals.length; j++) {
             if (j + 1 === vals.length) {
               values.push(vals[j].slice(1, -1))
@@ -416,8 +418,17 @@
               values.push(vals[j].slice(1, vals[j].length))
             }
           }
-          console.log(tbody.childNodes)
-          f.push({"name": tbody.childNodes[i].querySelector("input").value,
+          var synonyms
+          var syns = tbody.childNodes[i].querySelectorAll("textarea")[0].value.split("\", ")
+          for (var j = 0; j < syns.length; j++) {
+            if (j + 1 === syns.length) {
+              values.push(syns[j].slice(1, -1))
+            } else if (syns[j] !== "") {
+              values.push(syns[j].slice(1, syns[j].length))
+            }
+          }
+          f.push({"name": tbody.childNodes[i].querySelectorAll("input").value,
+                  "synonyms": synonyms,
                   "type": tbody.childNodes[i].querySelector("button").innerHTML,
                   "values": values
           })
@@ -459,12 +470,17 @@
           }
         }
         for (var i = 0; i < data["features"].length; i++) {
-          var s = ""
+          var values = ""
           for (var j = 0; j < data["features"][i]["values"].length; j++) {
-            s += "\"" + data["features"][i]["values"][j] + "\", "
+            values += "\"" + data["features"][i]["values"][j] + "\", "
           }
-          s = s.slice(0, -2)
-          createFeatureRow(data["features"][i]["name"], data["features"][i]["type"], s)
+          values = values.slice(0, -2)
+          var synonyms = ""
+          for (var j = 0; j < data["features"][i]["synonyms"].length; j++) {
+            values += "\"" + data["features"][i]["synonyms"][j] + "\", "
+          }
+          values = values.slice(0, -2)
+          createFeatureRow(data["features"][i]["name"], synonyms, data["features"][i]["type"], values)
         }
       }
 
@@ -489,7 +505,7 @@
         }
       }
 
-      function createFeatureRow(name, type, values) {
+      function createFeatureRow(name, synonyms, type, values) {
         var tb = document.getElementById("tbodyFeatures")
         var row = document.createElement("tr")
         row.setAttribute("id", "row" + (tb.childNodes.length - 1))
@@ -502,30 +518,37 @@
         td1.appendChild(in1)
 
         var td2 = document.createElement("td")
-        var b2 = document.createElement("button")
-        b2.setAttribute("type", "button")
-        b2.setAttribute("class", "btn btn-success my-btn")
-        b2.innerHTML = type
-        b2.setAttribute("id", "type" + (tb.childNodes.length + 1))
-        td2.appendChild(b2)
+        var ta2 = document.createElement("textarea")
+        ta2.setAttribute("class", "form-control my-ta-small")
+        ta2.innerHTML = synonyms
+        td2.appendChild(ta2)
 
         var td3 = document.createElement("td")
-        var ta3 = document.createElement("textarea")
-        ta3.setAttribute("class", "form-control my-ta-small")
-        ta3.innerHTML = values
-        td3.appendChild(ta3)
+        var b3 = document.createElement("button")
+        b3.setAttribute("type", "button")
+        b3.setAttribute("class", "btn btn-success my-btn")
+        b3.innerHTML = type
+        b3.setAttribute("id", "type" + (tb.childNodes.length + 1))
+        td3.appendChild(b3)
 
         var td4 = document.createElement("td")
-        var b4 = document.createElement("button")
-        b4.setAttribute("type", "button")
-        b4.setAttribute("class", "btn btn-success my-btn")
-        b4.innerHTML = "Delete"
-        td4.appendChild(b4)
+        var ta4 = document.createElement("textarea")
+        ta4.setAttribute("class", "form-control my-ta-small")
+        ta4.innerHTML = values
+        td4.appendChild(ta4)
+
+        var td5 = document.createElement("td")
+        var b5 = document.createElement("button")
+        b5.setAttribute("type", "button")
+        b5.setAttribute("class", "btn btn-success my-btn")
+        b5.innerHTML = "Delete"
+        td5.appendChild(b5)
 
         row.appendChild(td1)
         row.appendChild(td2)
         row.appendChild(td3)
         row.appendChild(td4)
+        row.appendChild(td5)
         tb.appendChild(row)
       }
 
@@ -569,7 +592,7 @@
 
       function updateFeatureRow(value, rowId) {
         var row = document.getElementById("row" + rowId)
-        var ta = row.querySelector("textarea")
+        var ta = row.querySelectorAll("textarea")[1]
         var type = row.querySelector("button")
         if (value === null) {
           ta.value = ta.value.slice(0, -2)
@@ -636,6 +659,7 @@
 
       function clearNewFeature() {
         $('#newFeatureName').val("")
+        $('#newFeatureSynonyms').val("")
         $('#typeNew').text(types[0])
         $('#values').val("")
       }
