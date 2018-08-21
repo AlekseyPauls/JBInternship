@@ -1,8 +1,8 @@
 from flask import request
 from flask import make_response, render_template
 from flask_mobility.decorators import mobile_template
-import os, json, csv, ast
-from bot import app, slack, auth, ADMIN, PASSWORD, SLACK_TOKEN
+import os, json
+from bot import app, slack, auth, ADMIN, PASSWORD
 from bot.respondent import make_answer
 import bot.service as serv
 

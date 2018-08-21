@@ -240,6 +240,7 @@
         }
 
         f = saveFeatures()
+        console.log(f)
         var data = JSON.stringify({"action": "saveDataset", "name": $('#datasetName').val(),
           "description": $('#datasetDescription').val(), "features": f, "file": $('#filename1').val()})
         xhr.open("POST", "/development", true)
@@ -418,16 +419,16 @@
               values.push(vals[j].slice(1, vals[j].length))
             }
           }
-          var synonyms
+          var synonyms = []
           var syns = tbody.childNodes[i].querySelectorAll("textarea")[0].value.split("\", ")
           for (var j = 0; j < syns.length; j++) {
             if (j + 1 === syns.length) {
-              values.push(syns[j].slice(1, -1))
+              synonyms.push(syns[j].slice(1, -1))
             } else if (syns[j] !== "") {
-              values.push(syns[j].slice(1, syns[j].length))
+              synonyms.push(syns[j].slice(1, syns[j].length))
             }
           }
-          f.push({"name": tbody.childNodes[i].querySelectorAll("input").value,
+          f.push({"name": tbody.childNodes[i].querySelector("input").value,
                   "synonyms": synonyms,
                   "type": tbody.childNodes[i].querySelector("button").innerHTML,
                   "values": values
@@ -477,9 +478,9 @@
           values = values.slice(0, -2)
           var synonyms = ""
           for (var j = 0; j < data["features"][i]["synonyms"].length; j++) {
-            values += "\"" + data["features"][i]["synonyms"][j] + "\", "
+            synonyms += "\"" + data["features"][i]["synonyms"][j] + "\", "
           }
-          values = values.slice(0, -2)
+          synonyms = synonyms.slice(0, -2)
           createFeatureRow(data["features"][i]["name"], synonyms, data["features"][i]["type"], values)
         }
       }

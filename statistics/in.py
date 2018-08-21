@@ -28,18 +28,34 @@ def calc(current_template, dataset, args1, connectors1, args2, connectors2):
             elif connectors2[args2.index(arg)] == "or":
                 s += "| "
     print(s)
-    tmp = [df.query(s)[args1[0]["feature"]]]
-    for con in connectors1:
-        if con is not None:
-            tmp.append(df.query(s)[args1[connectors1.index(con) + 1]["feature"]])
-    s = ""
-    for t in tmp:
-        print(str(t))
-        for e in t.values:
-            s += str(e) + ", "
-        s = s[:-2]
 
-    res = current_template["answer"].replace("<>", s)
+    answ = ""
+    tmp = {}
+    tmp[args1[0]["feature"]] = df.query(s)[args1[0]["feature"]]
+    for con in connectors1:
+        if con == "and":
+            tmp[args1[connectors1.index(con) + 1]["feature"]] = df.query(s)[args1[connectors1.index(con) + 1]["feature"]]
+        if con == "or":
+            if len(tmp) != 0:
+                d = pd.DataFrame(tmp)
+                for i in range(len(d.index)):
+                    for e in d.iloc[i]:
+                        answ += str(e) + " "
+                    answ = answ[:-1] + ", "
+                answ = answ[:-2] + " or "
+                tmp = {}
+                tmp[args1[connectors1.index(con) + 1]["feature"]] = df.query(s)[args1[connectors1.index(con) + 1]["feature"]]
+    if len(tmp) != 0:
+        d = pd.DataFrame(tmp)
+        for i in range(len(d.index)):
+            for e in d.iloc[i]:
+                answ += str(e) + " "
+            answ = answ[:-1] + ", "
+        answ = answ[:-2] + "."
+    else:
+        answ += "."
+
+    res = current_template["answer"].replace("<>", answ)
     return str(res)
 
 

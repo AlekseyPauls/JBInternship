@@ -36,8 +36,17 @@ class Datasets(db.Model):
         features = self.features
         s = ""
         for feature in features:
-            s += "" + feature["name"] + " (" + feature["type"] + "), "
+            syns = "("
+            for syn in feature["synonyms"]:
+                if syn != "":
+                    syns += syn + ", "
+            if syns != "(":
+                syns = syns[:-2] + ") "
+            else:
+                syns = ""
+            s += "" + feature["name"] + " " + syns + "- " + feature["type"] + ", "
         s = s[:-2]
+        print(s)
         return [self.name, self.description, s]
 
     def get_values(self):
