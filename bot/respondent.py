@@ -1,4 +1,4 @@
-import csv, importlib, collections, ast
+import csv, importlib, collections, ast, re
 from dateutil import parser
 import bot.service as serv
 
@@ -71,7 +71,7 @@ def find_template(statistics, question):
         for template in statistic["templates"]:
             for delimiter in template["delimiters"]:
                 for variant in serv.variants(delimiter):
-                    if template["question"] in question and variant in question:
+                    if template["question"].lower() in question and variant in question:
                         return statistic, template, delimiter
     return {}, {}, ""
 
@@ -130,10 +130,14 @@ def find_features(args, features):
 def get_feature_by_name(arg, features):
     for feature in features:
         if feature["name"] in arg:
-            return feature["name"], get_arg_by_type(arg.replace(feature["name"], ""), feature["type"])
+            val = get_arg_by_values(arg.replace(feature["name"], ""), feature["values"])
+            val = get_arg_by_type(val, feature["type"])
+            return feature["name"], val
         for syn in feature["synonyms"]:
             if syn != "" and syn in arg:
-                return feature["name"], get_arg_by_type(arg.replace(syn, ""), feature["type"])
+                val = get_arg_by_values(arg.replace(syn, ""), feature["values"])
+                val = get_arg_by_type(val, feature["type"])
+                return feature["name"], val
     return None, None
 
 
@@ -141,6 +145,7 @@ def get_feature_by_values(arg, features):
     for feature in features:
         for val in feature["values"]:
             if val != "" and val in arg:
+                val = get_arg_by_type(val, feature["type"])
                 return feature["name"], val
     return None, None
 
@@ -159,9 +164,21 @@ def get_feature_by_type(arg, features):
     return None, None
 
 
+def get_arg_by_values(arg, values):
+    for value in values:
+        if value in arg:
+            return value
+    return arg
+
+
 # To do: MAKE IT
 def get_arg_by_type(arg, type):
-    return serv.clean(arg)
+    if serv.clean(arg) == "":
+        return None
+    if type == "number":
+        print(arg)
+        return int(re.search(r'\d+', arg).group())
+    return "\"" + serv.clean(arg) + "\""
 
 
 # Type 'special' doesn`t participate in the type definition, because it can be something unexpected

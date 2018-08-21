@@ -3,11 +3,6 @@ from bot.models import Datasets, Statistics
 from bot import db
 
 
-# db.session.add(Statistics("Mean", "Mean", "[{'question': 'what is mean ', 'delimiters': [' in ']}]", "mean.py"))
-# db.session.add(Statistics("In", "In", "[{'question': 'in which ', 'delimiters': [' were ', ' was '], 'answer': 'In <>.'}]", "in.py"))
-# db.session.commit()
-
-
 def find_dataset(question):
     ds = {}
     for dataset in Datasets.query.all():
