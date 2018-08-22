@@ -1,3 +1,0 @@
-name,description,templates,file
-Mean,Mean,"[{'question': 'what is mean ', 'delimiters': [' in ']}]",mean
-In,In,"[{'question': 'in which ', 'delimiters': [' were ', ' was '], 'answer': 'In <>.'}]",in

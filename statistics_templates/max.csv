@@ -1,0 +1,9 @@
+Question,Delimiters,Answer
+The maximum of ,"['in', 'at']",The maximum is <>
+What is maximum of ,"['in', 'at']",The maximum is <>
+What is maximum ,"['in', 'at']",The maximum is <>
+What maximum ,"['in', 'was in', 'is in', 'there is in', 'at', 'was at', 'is at', 'there is at']",The maximum is <>
+Maximum of ,"['in', 'at']",The maximum is <>
+Maximum ,"['in', 'at']",The maximum is <>
+Maximum of ,"['']",The maximum is <>
+Maximum ,"['']",The maximum is <>

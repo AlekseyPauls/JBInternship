@@ -41,16 +41,21 @@ def make_answer(question, dataset):
 
     if current_template == {}:
         return "Have no suitable template (can't understand your question)"
-    question = question.replace(current_template["question"], "")
-    args = question.split(current_delimiter)
+    question = question.replace(current_template["question"].lower(), "")
 
-    args1, connectors1 = find_connectors(args[0])
-    args2, connectors2 = find_connectors(args[1])
-    args1 = find_features(args1, features)
-    args2 = find_features(args2, features)
-
-    print("Template: " + str(current_template) + "\nArgs1: " + str(args1) + "\nConnectors1: " + str(
-        connectors1) + "\nArgs2: " + str(args2) + "\nConnectors2: " + str(connectors2))
+    if (current_delimiter == ""): # Single-argument template
+        args1, connectors1 = find_connectors(question)
+        args1 = find_features(args1, features)
+        args2 = None
+        connectors2 = None
+    else:
+        args = question.split(current_delimiter)
+        args1, connectors1 = find_connectors(args[0])
+        args2, connectors2 = find_connectors(args[1])
+        args1 = find_features(args1, features)
+        args2 = find_features(args2, features)
+        print("Template: " + str(current_template) + "\nArgs1: " + str(args1) + "\nConnectors1: " + str(
+            connectors1) + "\nArgs2: " + str(args2) + "\nConnectors2: " + str(connectors2))
 
     stat = importlib.import_module("statistics." + current_statistic["file"][:-3])
     calc = getattr(stat, "calc")
@@ -71,7 +76,7 @@ def find_template(statistics, question):
         for template in statistic["templates"]:
             for delimiter in template["delimiters"]:
                 for variant in serv.variants(delimiter):
-                    if template["question"].lower() in question and variant in question:
+                    if template["question"].lower() in question and variant.lower() in question:
                         return statistic, template, delimiter
     return {}, {}, ""
 
@@ -176,9 +181,13 @@ def get_arg_by_type(arg, type):
     if serv.clean(arg) == "":
         return None
     if type == "number":
-        print(arg)
-        return int(re.search(r'\d+', arg).group())
-    return "\"" + serv.clean(arg) + "\""
+        r = re.search(r'\d+', arg)
+        if r is not None:
+            return int(re.search(r'\d+', arg).group())
+    if type == "special":
+        return "\"" + serv.clean(arg) + "\""
+    else:
+        return None
 
 
 # Type 'special' doesn`t participate in the type definition, because it can be something unexpected

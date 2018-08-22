@@ -25,13 +25,13 @@ def calc(current_template, dataset, args1, connectors1, args2, connectors2):
         # Single-argument (only main arguments) case
         if args2 is None:
             answ = ""
-            answ += str(df[args1[0]["feature"]].var()) + ", "
+            answ += str(df[args1[0]["feature"]].min()) + ", "
             for con in connectors1:
                 if con == "and":
-                    answ += str(df[args1[connectors1.index(con) + 1]["feature"]].var()) + ", "
+                    answ += str(df[args1[connectors1.index(con) + 1]["feature"]].min()) + ", "
                 if con == "or":
                     answ = answ[:-2] + " or " + str(
-                        df[args1[connectors1.index(con) + 1]["feature"]].var()) + ", "
+                        df[args1[connectors1.index(con) + 1]["feature"]].min()) + ", "
             answ = answ[:-2] + "."
 
             # Return answer like a string
@@ -65,12 +65,12 @@ def calc(current_template, dataset, args1, connectors1, args2, connectors2):
 
         # Generate answer in dependence on connectors
         answ = ""
-        answ += str(df.query(s)[args1[0]["feature"]].var()) + ", "
+        answ += str(df.query(s)[args1[0]["feature"]].min()) + ", "
         for con in connectors1:
             if con == "and":
-                answ += str(df.query(s)[args1[connectors1.index(con) + 1]["feature"]].var()) + ", "
+                answ += str(df.query(s)[args1[connectors1.index(con) + 1]["feature"]].min()) + ", "
             if con == "or":
-                answ = answ[:-2] + " or " + str(df.query(s)[args1[connectors1.index(con) + 1]["feature"]].var()) + ", "
+                answ = answ[:-2] + " or " + str(df.query(s)[args1[connectors1.index(con) + 1]["feature"]].min()) + ", "
         answ = answ[:-2] + "."
 
         # Return answer like a string

@@ -18,8 +18,8 @@ except Exception:
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-#app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///bot"
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///bot"
 auth = HTTPBasicAuth()
 Mobility(app)
 slack = Slacker(SLACK_TOKEN)

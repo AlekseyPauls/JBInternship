@@ -32,6 +32,9 @@ class Datasets(db.Model):
     def get_features(self):
         return self.features
 
+    def get_description(self):
+        return self.description
+
     def get_info(self):
         features = self.features
         s = ""
@@ -80,6 +83,9 @@ class Statistics(db.Model):
     def get_name(self):
         return self.name
 
+    def get_description(self):
+        return self.description
+
     def get_info(self):
         templates = self.templates
         s = ""
@@ -89,9 +95,10 @@ class Statistics(db.Model):
             for delimiter in template["delimiters"]:
                 dels += delimiter + ", "
             dels = dels[:-2]
-            if template["delimiters"] is not None:
+            if template["delimiters"] != ['']:
                 s += " [" + dels + "] ..."
             s += "?, "
+        s = s[:-2]
         return [self.name, self.description, s]
 
     def get_values(self):

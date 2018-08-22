@@ -38,7 +38,7 @@
           <tr>
             <th id="sName" class="name-cell" style="width: 33%; text-align: center;">Name</th>
             <th id="sDescription" class="name-cell" style="width: 33%; text-align: center;">Description</th>
-            <th id="sTemplates" class="name-cell" style="width: 33%; text-align: center; max-height: 10px;">Templates</th>
+            <th id="sTemplates" class="name-cell" style="width: 33%; text-align: center;">Templates</th>
           </tr>
         </thead>
         <tbody id="statisticsBody"></tbody>
@@ -58,7 +58,7 @@
           var div = document.createElement("div")
           td.appendChild(div)
           div.innerHTML = datasets[i][j]
-          div.style = "height: 35px; overflow-y: auto;"
+          div.style = "height: 50px; overflow-y: auto;"
           tr.appendChild(td)
         }
         document.getElementById("datasetsBody").appendChild(tr)
@@ -71,7 +71,7 @@
           var div = document.createElement("div")
           td.appendChild(div)
           div.innerHTML = statistics[i][j]
-          div.style = "height: 35px; overflow-y: auto;"
+          div.style = "height: 50px; overflow-y: auto;"
           tr.appendChild(td)
         }
         document.getElementById("statisticsBody").appendChild(tr)

@@ -1,2 +1,0 @@
-name,description,features,file
-Users,Users in month,"[{'name': 'month', 'type': 'special', 'values': ['april', 'may']},{'name': 'users', 'type': 'number', 'values': ''},{'name': 'year', 'type': 'number', 'values': ''}]",users.csv

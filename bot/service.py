@@ -81,6 +81,20 @@ def get_datasets_info():
     return res
 
 
+def get_dataset_info(name):
+    dataset = Datasets.query.filter_by(name=name).first()
+    if dataset:
+        return dataset.get_info()
+    return None
+
+
+def get_datasets_short_info():
+    res = ""
+    for dataset in Datasets.query.all():
+        res += dataset.get_name() + ", " + dataset.get_description() + "\n"
+    return res
+
+
 def get_dataset(name):
     dataset = Datasets.query.filter_by(name=name).first()
     if dataset:
@@ -99,6 +113,20 @@ def get_statistics_info():
     res = []
     for statistic in Statistics.query.all():
         res.append(statistic.get_info())
+    return res
+
+
+def get_statistic_info(name):
+    statistic = Statistics.query.filter_by(name=name).first()
+    if statistic:
+        return statistic.get_info()
+    return None
+
+
+def get_statistics_short_info():
+    res = ""
+    for statistic in Statistics.query.all():
+        res += statistic.get_name() + ", " + statistic.get_description() + "\n"
     return res
 
 
@@ -124,6 +152,8 @@ def get_statistic_names():
 
 
 def variants(word):
+    if word == "":
+        return [""]
     res = []
     res.append(" " + word + " ")
     res.append(" " + word + ",")

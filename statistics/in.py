@@ -22,6 +22,17 @@ def calc(current_template, dataset, args1, connectors1, args2, connectors2):
         # Open dataset from folder 'datasets' as Dataframe
         df = pd.read_csv("datasets/" + dataset)
 
+        # Single-argument (only main arguments) case
+        # There is no single-argument behaviour
+
+        # Check arguments
+        none_counter = 0
+        for arg in args2:
+            if arg is None:
+                none_counter += 1
+        if none_counter != 0:
+            return "Bad question: can`t find value for some dependent feature"
+
         # Make query request for Dataframe
         s = ""
         for arg in args2:

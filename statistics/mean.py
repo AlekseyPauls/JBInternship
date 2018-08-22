@@ -1,10 +1,3 @@
-# def calc(dataset, columns, values):
-#     df = pd.read_csv("datasets/" + dataset)
-#     if (values[1] in months):
-#         values[1] = months.index(values[1]) + 1
-#     mean = df.query(str(columns[1]) + " == " + str(values[1]))[columns[0]].mean()
-#     return "The mean number of " + columns[0] + " in " + columns[1] + " " + str(values[1]) + " is " + str(mean)
-
 import pandas as pd
 
 """
@@ -29,6 +22,30 @@ def calc(current_template, dataset, args1, connectors1, args2, connectors2):
         # Open dataset from folder 'datasets' as Dataframe
         df = pd.read_csv("datasets/" + dataset)
 
+        # Single-argument (only main arguments) case
+        if args2 is None:
+            answ = ""
+            answ += str(df[args1[0]["feature"]].mean()) + ", "
+            for con in connectors1:
+                if con == "and":
+                    answ += str(df[args1[connectors1.index(con) + 1]["feature"]].mean()) + ", "
+                if con == "or":
+                    answ = answ[:-2] + " or " + str(
+                        df[args1[connectors1.index(con) + 1]["feature"]].mean()) + ", "
+            answ = answ[:-2] + "."
+
+            # Return answer like a string
+            res = current_template["answer"].replace("<>", answ)
+            return str(res)
+
+        # Check arguments
+        none_counter = 0
+        for arg in args2:
+            if arg is None:
+                none_counter += 1
+        if none_counter != 0:
+            return "Bad question: can`t find value for some dependent feature"
+
         # Make query request for Dataframe
         s = ""
         for arg in args2:
@@ -48,32 +65,13 @@ def calc(current_template, dataset, args1, connectors1, args2, connectors2):
 
         # Generate answer in dependence on connectors
         answ = ""
-        tmp = {}
-        tmp[args1[0]["feature"]] = df.query(s)[args1[0]["feature"]]
+        answ += str(df.query(s)[args1[0]["feature"]].mean()) + ", "
         for con in connectors1:
             if con == "and":
-                tmp[args1[connectors1.index(con) + 1]["feature"]] = df.query(s)[
-                    args1[connectors1.index(con) + 1]["feature"]]
+                answ += str(df.query(s)[args1[connectors1.index(con) + 1]["feature"]].mean()) + ", "
             if con == "or":
-                if len(tmp) != 0:
-                    d = pd.DataFrame(tmp)
-                    for i in range(len(d.index)):
-                        for e in d.iloc[i]:
-                            answ += str(e) + " "
-                        answ = answ[:-1] + ", "
-                    answ = answ[:-2] + " or "
-                    tmp = {}
-                    tmp[args1[connectors1.index(con) + 1]["feature"]] = df.query(s)[
-                        args1[connectors1.index(con) + 1]["feature"]]
-        if len(tmp) != 0:
-            d = pd.DataFrame(tmp)
-            for i in range(len(d.index)):
-                for e in d.iloc[i]:
-                    answ += str(e) + " "
-                answ = answ[:-1] + ", "
-            answ = answ[:-2] + "."
-        else:
-            answ += "."
+                answ = answ[:-2] + " or " + str(df.query(s)[args1[connectors1.index(con) + 1]["feature"]].mean()) + ", "
+        answ = answ[:-2] + "."
 
         # Return answer like a string
         res = current_template["answer"].replace("<>", answ)
@@ -82,4 +80,3 @@ def calc(current_template, dataset, args1, connectors1, args2, connectors2):
         return "Something wrong at question processing. \n" + "Template: " + str(current_template) + \
                "\nArgs1: " + str(args1) + "\nConnectors1: " + str(connectors1) + \
                "\nArgs2: " + str(args2) + "\nConnectors2: " + str(connectors2)
-

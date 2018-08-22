@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from flask import make_response, render_template
 from flask_mobility.decorators import mobile_template
 import os, json
@@ -21,6 +21,29 @@ def hello_slack():
             answer = make_answer(slack_event["text"], "")
             slack.chat.post_message(slack_event["channel"], answer)
             return make_response("ok", 200, {"content_type": "application/json"})
+
+
+@app.route("/commands", methods=["POST", "GET"])
+def exec_command():
+    command = request.form.get('command', None)
+    text = request.form.get('text', None)
+    if command == "/info":
+        return "Datasets: \n\n" + serv.get_datasets_short_info() + "\nStatistics: \n\n" + serv.get_statistics_short_info() + \
+            "\nTo get information about dataset features or statistic templates (possible questions) use commands " + \
+            "'/info_dataset <dataset name>' and '/info_statistic <statistic name>'"
+    if command == "/info_dataset":
+        d = serv.get_dataset_info(text)
+        if d is None:
+            return "Bad dataset name"
+        return "Name: " + d[0] + "\nDescription: " + d[1] + "\nFeatures: " + d[2]
+    if command == "/info_statistic":
+        s = serv.get_statistic_info(text)
+        if s is None:
+            return "Bad statistic name"
+        return "Name: " + s[0] + "\nDescription: " + s[1] + "\nTemplates: " + s[2]
+    if command == "/rules":
+        return "This will be rules (after documentation creating)"
+    return "ok"
 
 
 @app.route('/', methods=["POST", "GET"])
