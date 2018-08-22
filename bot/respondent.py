@@ -17,6 +17,8 @@ def make_answer(question, dataset):
 
     print(dataset + ", " + question)
 
+    dataset=""
+
     if dataset == "":
         ds = serv.find_dataset(question)
         if ds["type"] == "one":

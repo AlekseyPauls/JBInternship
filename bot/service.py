@@ -160,6 +160,8 @@ def variants(word):
     res.append("(" + word + " ")
     res.append(" " + word + ")")
     res.append("(" + word + ")")
+    res.append(word + " ")
+    res.append(" " + word)
     return res
 
 
