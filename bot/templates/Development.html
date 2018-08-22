@@ -281,7 +281,7 @@
       })
 
       $('#deleteStatistic').on('click', function() {
-        var data = JSON.stringify({"action": "deleteStatistic", "name": $('#datasetName').val()})
+        var data = JSON.stringify({"action": "deleteStatistic", "name": $('#statisticName').val()})
         xhr.open("POST", "/development", true)
         xhr.setRequestHeader("Content-Type", "application/json")
         xhr.send(data)
