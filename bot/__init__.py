@@ -24,7 +24,6 @@ auth = HTTPBasicAuth()
 Mobility(app)
 slack = Slacker(SLACK_TOKEN)
 db = SQLAlchemy(app)
-db.create_all()
 
 log = logging.getLogger("logger")
 handler = logging.FileHandler("feedback/logs.log")

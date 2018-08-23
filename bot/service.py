@@ -4,6 +4,9 @@ from bot.models import Datasets, Statistics, Feedback
 from bot import db
 
 
+db.create_all()
+
+
 def save_feedback(mes):
     db.session.add(Feedback(mes, datetime.utcnow()))
     db.session.commit()
