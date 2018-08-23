@@ -1,4 +1,4 @@
-import importlib, collections, re, traceback
+import importlib, collections, re, csv, traceback
 from dateutil import parser
 import bot.service as serv
 from bot import log
@@ -111,12 +111,6 @@ def make_answer(question, dataset):
                                   "answerType": "exception",
                                   "answer": traceback.format_exc(),
                                   })
-
-
-def save_feedback(feedback):
-    # with open("feedback.json") as fb:
-    #     fb.write()
-    pass
 
 
 def prepare_question(question):
@@ -233,40 +227,60 @@ def get_arg_by_values(arg, values):
     return arg
 
 
-# To do: MAKE IT
 def get_arg_by_type(arg, type):
     if serv.clean(arg) == "":
         return None
-    if type == "number":
-        r = re.search(r'\d+', arg)
-        if r is not None:
-            return int(re.search(r'\d+', arg).group())
-    if type == "string":
+    elif type == "datetime":
+        return get_datetime(serv.clean(arg))
+    elif type == "currency":
+        return get_currency(arg)
+    elif type == "percent":
+        return get_percent(arg)
+    elif type == "float":
+        return get_float(arg)
+    elif type == "integer":
+        return get_integer(arg)
+    elif type == "string":
         return "\"" + serv.clean(arg) + "\""
     else:
         return None
 
 
-# Type 'string' doesn`t participate in the type definition, because it can be something unexpected
 def get_type(s):
-    if is_number(s):
-        return "number"
-    if is_date(s):
-        return "date"
+    if get_datetime(s):
+        return "datetime"
+    elif get_currency(s):
+        return "currency"
+    elif get_percent(s):
+        return "percent"
+    elif get_float(s):
+        return "float"
+    elif get_integer(s):
+        return "integer"
+    else:
+        return "string"
 
 
-def is_number(s):
+# TO DO: make it better
+def get_datetime(s):
     try:
-        float(s)
-        return True
+        t = parser.parse(s)
+        return t
     except ValueError:
-        return False
+        return None
 
 
-def is_date(s):
-    try:
-        parser.parse(s)
-        return True
-    except ValueError:
-        return False
+def get_currency(s):
+    return re.search(r'([$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦]\s*[0-9])|([0-9]\s*[$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦])', s)
 
+
+def get_percent(s):
+    return re.search(r'[0-9]+\s*%', s)
+
+
+def get_float(s):
+    return re.search(r'([0-9]*[.,][0-9]+)|([0-9]+[.,][0-9]*)', s)
+
+
+def get_integer(s):
+    return re.search(r'[0-9]+', s)

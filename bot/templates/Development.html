@@ -325,7 +325,7 @@
             for (var i = 0; i < results["data"].length; i++) {
               if (i === 0) {
                 for (var j = 0; j < results["data"][i].length; j++) {
-                  createFeatureRow(results["data"][i][j], "", "number", "")
+                  createFeatureRow(results["data"][i][j], "", "", "")
                 }
               } else {
                 for (var j = 0; j < results["data"][i].length; j++) {
@@ -591,18 +591,39 @@
         tb.appendChild(row)
       }
 
-      // Types: string, datetime, integer, float, money, percent
-
       function updateFeatureRow(value, rowId) {
         var row = document.getElementById("row" + rowId)
         var ta = row.querySelectorAll("textarea")[1]
         var type = row.querySelector("button")
-        if (value === null) {
-          ta.value = ta.value.slice(0, -2)
-        } else if (ta.value.indexOf(value) === -1) {
-          ta.value += "\"" + value + "\", "
-          if (!isNumeric(value) && type.innerHTML !== "string") {
+        if (type.innerHTML === "" && value !== null) {
+          value = value.toString()
+          if (isDatetime(value)) {
+            type.innerHTML = "datetime"
+          } else if (isCurrency(value)) {
+            type.innerHTML = "currency"
+          } else if (isPercent(value)) {
+            type.innerHTML = "percent"
+          } else if (isFloat(value)) {
+            type.innerHTML = "float"
+          } else if (isInteger(value)) {
+            type.innerHTML = "integer"
+          } else {
             type.innerHTML = "string"
+          }
+        }
+        if (value === null) {
+          /* To not enumerate all possible options, if there are a lot of them and this is a class of objects */
+          if (ta.value.length > 3000) {
+            ta.value = ""
+          } else {
+            ta.value = ta.value.slice(0, -2)
+          }
+          if (type.innerHTML === "") {
+            type.innerHTML = "string"
+          }
+        } else if (ta.value.indexOf(value) === -1) {
+          if (ta.value.length < 1000) {
+            ta.value += "\"" + value + "\", "
           }
         }
       }
@@ -688,9 +709,43 @@
         }
       }
 
-      function isNumeric(num){
-        return !isNaN(num)
+      /* Types recognition (string, datetime, integer, float, currency, percent) */
+
+      function isDatetime(str) {
+        if (!Date.parse(str)) {
+         return false
+        }
+        return true
       }
+
+      function isCurrency(str) {
+        if (str.search(/([$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦]\s*[0-9])|([0-9]\s*[$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦])/) === -1) {
+         return false
+        }
+        return true
+      }
+
+      function isPercent(str) {
+        if (str.search(/[0-9]\s*%/) === -1) {
+         return false
+        }
+        return true
+      }
+
+      function isFloat(str) {
+        if (str.search(/([0-9]*[.,][0-9]+)|([0-9]+[.,][0-9]*)/) === -1) {
+         return false
+        }
+        return true
+      }
+
+      function isInteger(str) {
+        if (str.search(/[0-9]+/) === -1) {
+         return false
+        }
+        return true
+      }
+
     </script>
   </body>
 </html>

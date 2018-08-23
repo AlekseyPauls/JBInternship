@@ -1,6 +1,12 @@
 import os, json, csv, ast, collections
-from bot.models import Datasets, Statistics
+from datetime import datetime
+from bot.models import Datasets, Statistics, Feedback
 from bot import db
+
+
+def save_feedback(mes):
+    db.session.add(Feedback(mes, datetime.utcnow()))
+    db.session.commit()
 
 
 def find_dataset(question):

@@ -4,7 +4,7 @@ import ast
 
 class Datasets(db.Model):
     name = db.Column(db.String(50), primary_key=True)
-    description = db.Column(db.String(200))
+    description = db.Column(db.String(300))
     features = db.Column(db.JSON)
     file = db.Column(db.String(100))
 
@@ -15,7 +15,7 @@ class Datasets(db.Model):
         self.file = file
 
     def __repr__(self):
-        return self.name + " ; " + self.description + " ; " + self.features + " ; " + self.file
+        return self.name + ", " + self.description + ", " + self.features + ", " + self.file
 
     def set_description(self, description):
         self.description = description
@@ -58,7 +58,7 @@ class Datasets(db.Model):
 
 class Statistics(db.Model):
     name = db.Column(db.String(50), primary_key=True)
-    description = db.Column(db.String(200))
+    description = db.Column(db.String(300))
     templates = db.Column(db.JSON)
     file = db.Column(db.String(100))
 
@@ -69,7 +69,7 @@ class Statistics(db.Model):
         self.file = file
 
     def __repr__(self):
-        return self.name + " ; " + self.description + " ; " + self.templates + " ; " + self.file
+        return self.name + ", " + self.description + ", " + self.templates + ", " + self.file
 
     def set_description(self, description):
         self.description = description
@@ -103,3 +103,16 @@ class Statistics(db.Model):
 
     def get_values(self):
         return {"name": self.name, "description": self.description, "templates": self.templates, "file": self.file}
+
+
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(500))
+    datetime = db.Column(db.DateTime)
+
+    def __init__(self, message, datetime):
+        self.message = message
+        self.datetime = datetime
+
+    def __repr__(self):
+        return self.id + ", " + self.message + ", " + self.datetime

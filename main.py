@@ -3,7 +3,7 @@ from flask import make_response, render_template
 from flask_mobility.decorators import mobile_template
 import os, json
 from bot import app, slack, auth, ADMIN, PASSWORD
-from bot.respondent import make_answer, save_feedback
+from bot.respondent import make_answer
 import bot.service as serv
 
 
@@ -21,6 +21,12 @@ def hello_slack():
             answer = make_answer(slack_event["text"], "")
             slack.chat.post_message(slack_event["channel"], answer)
             return make_response("ok", 200, {"content_type": "application/json"})
+    elif slack_event["type"] == "im_created":
+        slack.chat.post_message(slack_event["channel"], "Hello once")
+        return make_response("ok", 200, {"content_type": "application/json"})
+    elif slack_event["type"] == "im_created":
+        slack.chat.post_message(slack_event["channel"], "Hello again")
+        return make_response("ok", 200, {"content_type": "application/json"})
 
 
 @app.route("/commands", methods=["POST", "GET"])
@@ -45,7 +51,7 @@ def exec_command():
         return "This will be rules (after documentation creating)"
     elif command == "/fb":
         print(text)
-        save_feedback(text)
+        serv.save_feedback(text)
         return "Thank you for the help!"
     return "ok"
 
@@ -60,7 +66,7 @@ def start(template):
             answer = make_answer(data["question"], data["dataset"])
             return make_response(json.dumps({"action": "setAnswer", "answer": answer}), 200, {"content_type": "application/json"})
         elif data["action"] == "sendFeedback":
-            save_feedback(data["feedback"])
+            serv.save_feedback(data["feedback"])
             return make_response(json.dumps({"action": "setFeedback", "answer": "Thank you for the help!"}), 200, {"content_type": "application/json"})
     else:
         dataset_names = json.dumps(serv.get_dataset_names())
@@ -120,7 +126,8 @@ def feedback(template):
     else:
         d = json.dumps(serv.get_dataset_names())
         s = json.dumps(serv.get_statistic_names())
-        t = json.dumps(['number', 'date', 'special'])
+        # TO DO: move types list to settings or import from respondent
+        t = json.dumps(["string", "datetime", "currency", "float", "integer", "percent"])
         return render_template(template, dataset_names=d, statistic_names=s, types=t)
 
 
