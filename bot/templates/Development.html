@@ -591,6 +591,8 @@
         tb.appendChild(row)
       }
 
+      // Types: string, datetime, integer, float, money, percent
+
       function updateFeatureRow(value, rowId) {
         var row = document.getElementById("row" + rowId)
         var ta = row.querySelectorAll("textarea")[1]
@@ -599,8 +601,8 @@
           ta.value = ta.value.slice(0, -2)
         } else if (ta.value.indexOf(value) === -1) {
           ta.value += "\"" + value + "\", "
-          if (!isNumeric(value) && type.innerHTML !== "Special") {
-            type.innerHTML = "special"
+          if (!isNumeric(value) && type.innerHTML !== "string") {
+            type.innerHTML = "string"
           }
         }
       }

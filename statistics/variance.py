@@ -18,65 +18,60 @@ also should be processed and take part in answer
 
 
 def calc(current_template, dataset, args1, connectors1, args2, connectors2):
-    try:
-        # Open dataset from folder 'datasets' as Dataframe
-        df = pd.read_csv("datasets/" + dataset)
+    # Open dataset from folder 'datasets' as Dataframe
+    df = pd.read_csv("datasets/" + dataset)
 
-        # Single-argument (only main arguments) case
-        if args2 is None:
-            answ = ""
-            answ += str(df[args1[0]["feature"]].var()) + ", "
-            for con in connectors1:
-                if con == "and":
-                    answ += str(df[args1[connectors1.index(con) + 1]["feature"]].var()) + ", "
-                if con == "or":
-                    answ = answ[:-2] + " or " + str(
-                        df[args1[connectors1.index(con) + 1]["feature"]].var()) + ", "
-            answ = answ[:-2] + "."
-
-            # Return answer like a string
-            res = current_template["answer"].replace("<>", answ)
-            return str(res)
-
-        # Check arguments
-        none_counter = 0
-        for arg in args2:
-            if arg is None:
-                none_counter += 1
-        if none_counter != 0:
-            return "Bad question: can`t find value for some dependent feature"
-
-        # Make query request for Dataframe
-        s = ""
-        for arg in args2:
-            s += arg["feature"]
-            if arg["interval"] == "":
-                s += "=="
-            elif arg["interval"] == "less":
-                s += "<"
-            elif arg["interval"] == "more":
-                s += ">"
-            s += arg["value"] + " "
-            if connectors2[args2.index(arg)] is not None:
-                if connectors2[args2.index(arg)] == "and":
-                    s += "& "
-                elif connectors2[args2.index(arg)] == "or":
-                    s += "| "
-
-        # Generate answer in dependence on connectors
+    # Single-argument (only main arguments) case
+    if args2 is None:
         answ = ""
-        answ += str(df.query(s)[args1[0]["feature"]].var()) + ", "
+        answ += str(df[args1[0]["feature"]].var()) + ", "
         for con in connectors1:
             if con == "and":
-                answ += str(df.query(s)[args1[connectors1.index(con) + 1]["feature"]].var()) + ", "
+                answ += str(df[args1[connectors1.index(con) + 1]["feature"]].var()) + ", "
             if con == "or":
-                answ = answ[:-2] + " or " + str(df.query(s)[args1[connectors1.index(con) + 1]["feature"]].var()) + ", "
+                answ = answ[:-2] + " or " + str(
+                    df[args1[connectors1.index(con) + 1]["feature"]].var()) + ", "
         answ = answ[:-2] + "."
 
         # Return answer like a string
         res = current_template["answer"].replace("<>", answ)
         return str(res)
-    except Exception as e:
-        return "Something wrong at question processing. \n" + "Template: " + str(current_template) + \
-               "\nArgs1: " + str(args1) + "\nConnectors1: " + str(connectors1) + \
-               "\nArgs2: " + str(args2) + "\nConnectors2: " + str(connectors2)
+
+    # Check arguments
+    none_counter = 0
+    for arg in args2:
+        if arg is None:
+            none_counter += 1
+    if none_counter != 0:
+        return "Bad question: can`t find value for some dependent feature"
+
+    # Make query request for Dataframe
+    s = ""
+    for arg in args2:
+        s += arg["feature"]
+        if arg["interval"] == "":
+            s += "=="
+        elif arg["interval"] == "less":
+            s += "<"
+        elif arg["interval"] == "more":
+            s += ">"
+        s += arg["value"] + " "
+        if connectors2[args2.index(arg)] is not None:
+            if connectors2[args2.index(arg)] == "and":
+                s += "& "
+            elif connectors2[args2.index(arg)] == "or":
+                s += "| "
+
+    # Generate answer in dependence on connectors
+    answ = ""
+    answ += str(df.query(s)[args1[0]["feature"]].var()) + ", "
+    for con in connectors1:
+        if con == "and":
+            answ += str(df.query(s)[args1[connectors1.index(con) + 1]["feature"]].var()) + ", "
+        if con == "or":
+            answ = answ[:-2] + " or " + str(df.query(s)[args1[connectors1.index(con) + 1]["feature"]].var()) + ", "
+    answ = answ[:-2] + "."
+
+    # Return answer like a string
+    res = current_template["answer"].replace("<>", answ)
+    return str(res)

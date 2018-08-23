@@ -39,12 +39,19 @@
             <td class="name-cell" align="right" valign="top">Question</td>
             <td height="150"><textarea id="question" class="form-control my-ta">In which month were 89704 users?</textarea></td>
             <td class="name-cell" align="left" valign="top">
-              <button type="button" id="send" class="btn btn-success my-btn">Send</button>
+              <button type="button" id="ask" class="btn btn-success my-btn">Ask</button>
             </td>
           </tr>
           <tr>
-            <td id="labelCards" class="name-cell" align="right" valign="top">Answer</td>
+            <td class="name-cell" align="right" valign="top">Answer</td>
             <td height="150"><textarea id="answer" class="form-control my-ta" readonly></textarea></td>
+          </tr>
+          <tr>
+            <td class="name-cell" align="right" valign="top">Feedback</td>
+            <td height="150"><textarea id="feedback" class="form-control my-ta"></textarea></td>
+            <td class="name-cell" align="left" valign="top">
+              <button type="button" id="send" class="btn btn-success my-btn">Send</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -75,14 +82,26 @@
           var json = JSON.parse(xhr.responseText)
           if (json["action"] === "setAnswer") {
             $('#answer').text(json['answer'])
+          } else if (json["action"] === "setFeedback") {
+            $('#feedback').val("")
+            $('#feedback').prop('placeholder', json['answer'])
           }
         }
       }
 
-      $('#send').on('click', function() {
+      $('#ask').on('click', function() {
         var question = $('#question').val()
         var dataset = $('#dataset').val()
-        var data = JSON.stringify({"action": "getQuestion", "question": question, "dataset": dataset})
+        var data = JSON.stringify({"action": "sendQuestion", "question": question, "dataset": dataset})
+        xhr.open("POST", "/", true)
+        xhr.setRequestHeader("Content-Type", "application/json");
+        console.log(xhr.status)
+        xhr.send(data)
+      })
+
+      $('#send').on('click', function() {
+        var feedback = $('#feedback').val()
+        var data = JSON.stringify({"action": "sendFeedback", "feedback": feedback})
         xhr.open("POST", "/", true)
         xhr.setRequestHeader("Content-Type", "application/json");
         console.log(xhr.status)

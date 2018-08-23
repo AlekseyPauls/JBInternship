@@ -1,9 +1,9 @@
 Question,Delimiters,Answer
-The minimum of ,"['in', 'at']",The minimum is <>
-What is minimum of ,"['in', 'at']",The minimum is <>
-What is minimum ,"['in', 'at']",The minimum is <>
-What minimum ,"['in', 'was in', 'is in', 'there is in', 'at', 'was at', 'is at', 'there is at']",The minimum is <>
-Minimum of ,"['in', 'at']",The minimum is <>
-Minimum ,"['in', 'at']",The minimum is <>
-Minimum of ,"['']",The minimum is <>
-Minimum ,"['']",The minimum is <>
+The minimum of,"['in', 'at']",The minimum is <>
+What is minimum of,"['in', 'at']",The minimum is <>
+What is minimum,"['in', 'at']",The minimum is <>
+What minimum,"['in', 'was in', 'is in', 'there is in', 'at', 'was at', 'is at', 'there is at']",The minimum is <>
+Minimum of,"['in', 'at']",The minimum is <>
+Minimum,"['in', 'at']",The minimum is <>
+Minimum of,"['']",The minimum is <>
+Minimum,"['']",The minimum is <>

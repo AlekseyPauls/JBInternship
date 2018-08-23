@@ -1,9 +1,9 @@
-from flask import request, jsonify
+from flask import request
 from flask import make_response, render_template
 from flask_mobility.decorators import mobile_template
 import os, json
 from bot import app, slack, auth, ADMIN, PASSWORD
-from bot.respondent import make_answer
+from bot.respondent import make_answer, save_feedback
 import bot.service as serv
 
 
@@ -31,18 +31,22 @@ def exec_command():
         return "Datasets: \n\n" + serv.get_datasets_short_info() + "\nStatistics: \n\n" + serv.get_statistics_short_info() + \
             "\nTo get information about dataset features or statistic templates (possible questions) use commands " + \
             "'/info_dataset <dataset name>' and '/info_statistic <statistic name>'"
-    if command == "/info_dataset":
+    elif command == "/info_dataset":
         d = serv.get_dataset_info(text)
         if d is None:
             return "Bad dataset name"
         return "Name: " + d[0] + "\nDescription: " + d[1] + "\nFeatures: " + d[2]
-    if command == "/info_statistic":
+    elif command == "/info_statistic":
         s = serv.get_statistic_info(text)
         if s is None:
             return "Bad statistic name"
         return "Name: " + s[0] + "\nDescription: " + s[1] + "\nTemplates: " + s[2]
-    if command == "/rules":
+    elif command == "/rules":
         return "This will be rules (after documentation creating)"
+    elif command == "/fb":
+        print(text)
+        save_feedback(text)
+        return "Thank you for the help!"
     return "ok"
 
 
@@ -52,8 +56,12 @@ def start(template):
     if request.method == 'POST':
         data = json.loads(request.data.decode('utf-8').replace('\0', ''))
         print(data)
-        answer = make_answer(data["question"], data["dataset"])
-        return make_response(json.dumps({"action": "setAnswer", "answer": answer}), 200, {"content_type": "application/json"})
+        if data["action"] == "sendQuestion":
+            answer = make_answer(data["question"], data["dataset"])
+            return make_response(json.dumps({"action": "setAnswer", "answer": answer}), 200, {"content_type": "application/json"})
+        elif data["action"] == "sendFeedback":
+            save_feedback(data["feedback"])
+            return make_response(json.dumps({"action": "setFeedback", "answer": "Thank you for the help!"}), 200, {"content_type": "application/json"})
     else:
         dataset_names = json.dumps(serv.get_dataset_names())
         return render_template(template, dataset_names=dataset_names)

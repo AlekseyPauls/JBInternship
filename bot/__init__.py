@@ -3,7 +3,7 @@ from flask_mobility import Mobility
 from flask_httpauth import HTTPBasicAuth
 from flask_sqlalchemy import SQLAlchemy
 from slacker import Slacker
-import configparser, os
+import configparser, os, logging, logmatic
 
 try:
     config = configparser.RawConfigParser()
@@ -25,3 +25,9 @@ Mobility(app)
 slack = Slacker(SLACK_TOKEN)
 db = SQLAlchemy(app)
 db.create_all()
+
+log = logging.getLogger("logger")
+handler = logging.FileHandler("feedback/logs.log")
+handler.setFormatter(logmatic.JsonFormatter())
+log.addHandler(handler)
+log.setLevel(logging.INFO)

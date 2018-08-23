@@ -1,9 +1,9 @@
 Question,Delimiters,Answer
-The variance of ,"['in', 'at']",The variance is <>
-What is variance of ,"['in', 'at']",The variance is <>
-What is variance ,"['in', 'at']",The variance is <>
-What variance ,"['in', 'was in', 'is in', 'there is in', 'at', 'was at', 'is at', 'there is at']",The variance is <>
-Variance of ,"['in', 'was in', 'is in', 'there is in', 'at', 'was at', 'is at', 'there is at']",The variance is <>
-Variance ,"['in', 'at']",The variance is <>
-Variance of ,"['']",The variance is <>
-Variance ,"['']",The variance is <>
+The variance of,"['in', 'at']",The variance is <>
+What is variance of,"['in', 'at']",The variance is <>
+What is variance,"['in', 'at']",The variance is <>
+What variance,"['in', 'was in', 'is in', 'there is in', 'at', 'was at', 'is at', 'there is at']",The variance is <>
+Variance of,"['in', 'was in', 'is in', 'there is in', 'at', 'was at', 'is at', 'there is at']",The variance is <>
+Variance,"['in', 'at']",The variance is <>
+Variance of,"['']",The variance is <>
+Variance,"['']",The variance is <>

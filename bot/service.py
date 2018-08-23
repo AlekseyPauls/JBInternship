@@ -141,6 +141,7 @@ def get_statistics():
     res = []
     for statistic in Statistics.query.all():
         res.append(statistic.get_values())
+    res.sort(key=my_sort, reverse=True)
     return res
 
 
@@ -163,6 +164,14 @@ def variants(word):
     res.append(word + " ")
     res.append(" " + word)
     return res
+
+
+def my_sort(e):
+    min = len(e["templates"][0]["question"])
+    for template in e["templates"]:
+        if len(template["question"]) < min:
+            min = len(template["question"])
+    return min
 
 
 def clean(s):
