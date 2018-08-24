@@ -54,7 +54,7 @@ Also, it is strongly recommended not to load large datasets - server capacity is
 
 ### Pages and functionality
 
-##### Start page (/)
+#### Start page (/)
 
 On this page you can ask, get answer and leave a feedback. 
 To ask the question, you first have to select the 'dataset' - data base from which the information will be provided.
@@ -62,7 +62,7 @@ Feedback is what you want to tell the developer.
 It might be a suggestion to add new statistics, datasets, or fix any errors. 
 Work with feedback is available to authorized users in the "Development" page.
 
-##### Info (/info)
+#### Info (/info)
 
 This page does not require you to do anything - just look at the information provided.
 The information about the datasets is presented in the form of a name, description and features of the dataset - 
@@ -72,7 +72,7 @@ The information about the statistics is presented in the form of a name, descrip
 variants of questions and answers (the template is described by a question and 
 list of delimiters of arguments in square brackets, '...' show the place to argument).
 
-##### Development (/development)
+#### Development (/development)
 
 (login/password to "Develop" tab - admin/admin)
 
@@ -117,23 +117,23 @@ the key "-d =".
 
 Now look at the available commands:
 
-##### /info
+#### /info
 
 You will get a message with lists of the datasets and statistics with names and descriptions. 
 
-##### /info_dataset dataset_name
+#### /info_dataset dataset_name
 
 You will get a message with information about dataset features
 
-##### /info_statistic statistic_name
+#### /info_statistic statistic_name
 
 You will get a message with information about statistic templates
 
-##### /rules
+#### /rules
 
 You will get a message with information about question creating for better recognition of your intentions.
 
-##### /fb your text
+#### /fb your text
 
 With this command you can leave feedback.
 
