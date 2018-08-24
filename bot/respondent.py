@@ -271,16 +271,16 @@ def get_datetime(s):
 
 
 def get_currency(s):
-    return re.search(r'([$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦]\s*[0-9])|([0-9]\s*[$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦])', s)
+    return re.search(r'([$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦]\s*[0-9])|([0-9]\s*[$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦])', s).group(0)
 
 
 def get_percent(s):
-    return re.search(r'[0-9]+\s*%', s)
+    return re.search(r'[0-9]+\s*%', s).group(0)
 
 
 def get_float(s):
-    return re.search(r'([0-9]*[.,][0-9]+)|([0-9]+[.,][0-9]*)', s)
+    return re.search(r'([0-9]*[.,][0-9]+)|([0-9]+[.,][0-9]*)', s).group(0)
 
 
 def get_integer(s):
-    return re.search(r'[0-9]+', s)
+    return re.search(r'[0-9]+', s).group(0)

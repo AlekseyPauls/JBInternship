@@ -48,7 +48,21 @@ def exec_command():
             return "Bad statistic name"
         return "Name: " + s[0] + "\nDescription: " + s[1] + "\nTemplates: " + s[2]
     elif command == "/rules":
-        return "This will be rules (after documentation creating)"
+        # TO DO: move it to settings or import from respondent
+        return "1. Formulate simple questions consisting of a question, the main argument (what information is being " \
+               "searched for), a delimiter (often a preposition), and a dependent argument (a condition, usually a " \
+               "specific value or an interval of a feature)\n" \
+               "2. To enter multiple arguments of the first or second type, separate them explicitly with the words " \
+               "'and' and 'or'\n" \
+               "3. If you want to add an interval ('more', 'before', ...) for a group of arguments, make it for each " \
+               "individual entity\n" \
+               "4. Do not use unnecessary words, like adjectives. If you did not receive an answer, try to delete " \
+               "the unnecessary words and articles\n " \
+               "5. If the bot replied that it did not find a suitable template, examine the list of statistics and " \
+               "their templates and try asking a question again\n" \
+               "6. If there was a problem with the recognition of the dataset, specify your arguments in the name of " \
+               "the feature ('4535 users', 'montn april') 7. If nothing helped, then leave a feedback and the problem " \
+               "will be solved"
     elif command == "/fb":
         print(text)
         serv.save_feedback(text)
