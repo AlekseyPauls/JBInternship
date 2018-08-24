@@ -111,6 +111,7 @@ def make_answer(question, dataset):
                                   "answerType": "exception",
                                   "answer": traceback.format_exc(),
                                   })
+        return "Something wrong (exception) was happened"
 
 
 def prepare_question(question):
