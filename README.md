@@ -19,7 +19,7 @@ Now we ask a question:
 
 And get the answer: "24352, 53241, 24234"
 
-What information do you know? What did you learn? The number of users in the month of April in different years. 
+What did you learn? The number of users in the month of April in different years. 
 To clarify the information, add one more condition: 
 
 "How many users were in the april and 2017?" 
