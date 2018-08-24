@@ -105,6 +105,13 @@ are required), 'delimiters' is a list of strings which separate the arguments in
 statistic supports single-argument semantic), 'Answer' is a string of answer in which will be inserted data 
 instead of "<>" symbols (answer must contain "<>" symbols).
 
+Example of content in the file with templates:
+
+Question,Delimiters,Answer
+What,"['were', 'was']",The <>
+How many,"['were', 'was']",<>
+Mean of,"['']",Mean is <>
+
 Feedback - in progress
 
 ## Bot

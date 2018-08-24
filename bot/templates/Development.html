@@ -183,7 +183,7 @@
           <div class="modal-content">
             <div id="message" class="modal-body message-label"></div>
             <div class="modal-footer">
-              <button id="close5" type="button" class="btn btn-info" data-dismiss="modal">&nbsp;</button>
+              <button id="close5" type="button" class="btn btn-info" data-dismiss="modal">OK</button>
             </div>
           </div>
         </div>
@@ -223,8 +223,8 @@
       }
 
       $('#saveDataset').on('click', function() {
+        // Async file sending
         if (document.getElementById('file1').value !== "") {
-          console.log("Send file")
           var formData = new FormData()
           formData.append('file', document.getElementById('file1').files[0])
           formData.append("action", "saveDatasetFile")
@@ -239,16 +239,27 @@
           })
         }
 
-        f = saveFeatures()
-        console.log(f)
-        var data = JSON.stringify({"action": "saveDataset", "name": $('#datasetName').val(),
-          "description": $('#datasetDescription').val(), "features": f, "file": $('#filename1').val()})
-        xhr.open("POST", "/development", true)
-        xhr.setRequestHeader("Content-Type", "application/json")
-        xhr.send(data)
+        if ($('#datasetName').val() === "") {
+          $('#message').text("Enter dataset name")
+          $('#modal').modal('show')
+        } else if ($('#filename1').val() === "") {
+          $('#message').text("Choose file")
+          $('#modal').modal('show')
+        } else if (document.getElementById("tbodyFeatures").childNodes.length === 1) {
+          $('#message').text("Please, add features")
+          $('#modal').modal('show')
+        } else {
+          f = saveFeatures()
+          var data = JSON.stringify({"action": "saveDataset", "name": $('#datasetName').val(),
+            "description": $('#datasetDescription').val(), "features": f, "file": $('#filename1').val()})
+          xhr.open("POST", "/development", true)
+          xhr.setRequestHeader("Content-Type", "application/json")
+          xhr.send(data)
+        }
       })
 
       $('#saveStatistic').on('click', function() {
+        // Async file sending
         if (document.getElementById('file2').value !== "") {
           console.log("Send file")
           var formData = new FormData()
@@ -265,12 +276,23 @@
           })
         }
 
-        f = saveTemplates()
-        var data = JSON.stringify({"action": "saveStatistic", "name": $('#statisticName').val(),
-          "description": $('#statisticDescription').val(), "templates": f, "file": $('#filename2').val()})
-        xhr.open("POST", "/development", true)
-        xhr.setRequestHeader("Content-Type", "application/json")
-        xhr.send(data)
+        if ($('#statisticName').val() === "") {
+          $('#message').text("Enter statistic name")
+          $('#modal').modal('show')
+        } else if ($('#filename2').val() === "") {
+          $('#message').text("Choose file")
+          $('#modal').modal('show')
+        } else if (document.getElementById("tbodyTemplates").childNodes.length === 1) {
+          $('#message').text("Please, add templates")
+          $('#modal').modal('show')
+        } else {
+          f = saveTemplates()
+          var data = JSON.stringify({"action": "saveStatistic", "name": $('#statisticName').val(),
+            "description": $('#statisticDescription').val(), "templates": f, "file": $('#filename2').val()})
+          xhr.open("POST", "/development", true)
+          xhr.setRequestHeader("Content-Type", "application/json")
+          xhr.send(data)
+        }
       })
 
       $('#deleteDataset').on('click', function() {
@@ -320,24 +342,34 @@
       })
 
       $('#importFeatures').on('click', function() {
-        Papa.parse(document.getElementById('file1').files[0], {delimiter:',', dynamicTyping:true, skipEmptyLines:true,
-          complete: function(results) {
-            for (var i = 0; i < results["data"].length; i++) {
-              if (i === 0) {
-                for (var j = 0; j < results["data"][i].length; j++) {
-                  createFeatureRow(results["data"][i][j], "", "", "")
+        if ($('#filename1').val() === "") {
+          $('#message').text("Choose file")
+          $('#modal').modal('show')
+        } else {
+          try {
+            Papa.parse(document.getElementById('file1').files[0], {delimiter:',', dynamicTyping:true, skipEmptyLines:true,
+              complete: function(results) {
+                for (var i = 0; i < results["data"].length; i++) {
+                  if (i === 0) {
+                    for (var j = 0; j < results["data"][i].length; j++) {
+                      createFeatureRow(results["data"][i][j], "", "", "")
+                    }
+                  } else {
+                    for (var j = 0; j < results["data"][i].length; j++) {
+                      updateFeatureRow(results["data"][i][j], j)
+                    }
+                  }
                 }
-              } else {
-                for (var j = 0; j < results["data"][i].length; j++) {
-                  updateFeatureRow(results["data"][i][j], j)
+                for (var j = 0; j < results["data"][0].length; j++) {
+                  updateFeatureRow(null, j)
                 }
               }
-            }
-            for (var j = 0; j < results["data"][0].length; j++) {
-              updateFeatureRow(null, j)
-            }
+            })
+          } catch (err) {
+            $('#message').text("Bad source")
+            $('#modal').modal('show')
           }
-        })
+        }
       })
 
       $('#importTemplates').on('click', function() {
@@ -345,30 +377,44 @@
       })
 
       $('#importTemplatesFromFile').on('click', function() {
-        Papa.parse(document.getElementById('file3').files[0], {delimiter:',', dynamicTyping:true, skipEmptyLines:true,
-          complete: function(results) {
-            for (var i = 0; i < results["data"].length; i++) {
-              if (i !== 0) {
-                var s = ""
-                console.log(results["data"][i][1])
-                var delimiters = JSON.parse(results["data"][i][1].replace(/'/g, '"'))
-                for (var j = 0; j < delimiters.length; j++) {
-                  s += "\"" + delimiters[j] + "\", "
+        if ($('#filename3').val() === "") {
+          $('#message').text("Choose file")
+          $('#modal').modal('show')
+        } else {
+          try {
+            Papa.parse(document.getElementById('file3').files[0], {delimiter:',', dynamicTyping:true, skipEmptyLines:true,
+              complete: function(results) {
+                for (var i = 0; i < results["data"].length; i++) {
+                  if (i !== 0) {
+                    var s = ""
+                    var delimiters = JSON.parse(results["data"][i][1].replace(/'/g, '"'))
+                    for (var j = 0; j < delimiters.length; j++) {
+                      s += "\"" + delimiters[j] + "\", "
+                    }
+                    s = s.slice(0, -2)
+                    createTemplateRow("\"" + results["data"][i][0] + "\"", s, "\"" + results["data"][i][2] + "\"")
+                  }
                 }
-                s = s.slice(0, -2)
-                createTemplateRow("\"" + results["data"][i][0] + "\"", s, "\"" + results["data"][i][2] + "\"")
               }
-            }
+            })
+          } catch (err) {
+            $('#message').text("Bad source")
+            $('#modal').modal('show')
           }
-        })
+        }
       })
 
       $('#tbodyFeatures').on('click', 'button', function() {
         if (this.innerHTML === "Delete") {
           this.parentNode.parentNode.remove()
         } else if (this.innerHTML === "Add new") {
-          createFeatureRow($('#newFeatureName').val(), $('#newFeatureSynonyms').val(), $('#typeNew').text(), $('#values').val())
-          clearNewFeature()
+          if ($('#newFeatureName').val() === "") {
+            $('#message').text("Please, enter feature name")
+            $('#modal').modal('show')
+          } else {
+            createFeatureRow($('#newFeatureName').val(), $('#newFeatureSynonyms').val(), $('#typeNew').text(), $('#values').val())
+            clearNewFeature()
+          }
         } else if (this.innerHTML === "Import") {
           $('#importFeaturesModal').modal('show')
         } else {
@@ -381,10 +427,26 @@
         if (this.innerHTML === "Delete") {
           this.parentNode.parentNode.remove()
         } else if (this.innerHTML === "Add new") {
-          createTemplateRow($('#newTemplateQuestion').val(), $('#newTemplateDelimiters').val(), $('#newTemplateAnswer').val())
-          clearNewTemplate()
+          if ($('#newTemplateQuestion').val() === "") {
+            $('#message').text("Please, enter template question")
+            $('#modal').modal('show')
+          } else if ($('#newTemplateDelimiters').val() === "") {
+            $('#message').text("Please, enter template delimiters")
+            $('#modal').modal('show')
+          } else if ($('#newTemplateAnswer').val() === "") {
+            $('#message').text("Please, enter template answer")
+            $('#modal').modal('show')
+          } else {
+            createTemplateRow($('#newTemplateQuestion').val(), $('#newTemplateDelimiters').val(), $('#newTemplateAnswer').val())
+            clearNewTemplate()
+          }
         }
       })
+
+      window.onerror = function (e) {
+        $('#message').text("Bad source")
+        $('#modal').modal('show')
+      }
 
       function generateList(list, place) {
         pl = document.getElementById(place)
