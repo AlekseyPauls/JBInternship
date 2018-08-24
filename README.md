@@ -35,7 +35,7 @@ Done! But we want to know the average attendance for 2017. Let's do it:
 
 The answer is: "24564,4354352"
 
-Well, but it would be great to know in which months of 2016 there were more than 500,000 users. Let's do:
+Well, but it would be great to know in which months of 2016 there were more than 50000 users. Let's do:
 
 "In which months were 2017 year and more then 50000 users?"
 
