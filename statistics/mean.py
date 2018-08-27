@@ -51,9 +51,9 @@ def calc(current_template, dataset, args1, connectors1, args2, connectors2):
         s += arg["feature"]
         if arg["interval"] == "":
             s += "=="
-        elif arg["interval"] == "less":
+        elif arg["interval"] == "down":
             s += "<"
-        elif arg["interval"] == "more":
+        elif arg["interval"] == "up":
             s += ">"
         s += arg["value"] + " "
         if connectors2[args2.index(arg)] is not None:
@@ -73,5 +73,7 @@ def calc(current_template, dataset, args1, connectors1, args2, connectors2):
     answ = answ[:-2] + "."
 
     # Return answer like a string
+    if answ == ".":
+        return "There is no such data"
     res = current_template["answer"].replace("<>", answ)
     return str(res)

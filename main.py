@@ -4,13 +4,13 @@ from flask_mobility.decorators import mobile_template
 import os, json
 from bot import app, slack, auth, ADMIN, PASSWORD
 from bot.respondent import make_answer
+from bot.respondent import types
 import bot.service as serv
 
 
 @app.route("/webhook", methods=["POST", "GET"])
 def hello_slack():
     json_request = json.loads(request.data.decode("UTF-8"))
-    print(json_request)
     if "challenge" in json_request:
         return make_response(json_request["challenge"], 200, {"content_type": "application/json"})
     slack_event = json_request["event"]
@@ -64,7 +64,6 @@ def exec_command():
                "the feature ('4535 users', 'montn april') 7. If nothing helped, then leave a feedback and the problem " \
                "will be solved"
     elif command == "/fb":
-        print(text)
         serv.save_feedback(text)
         return "Thank you for the help!"
     return "ok"
@@ -75,7 +74,6 @@ def exec_command():
 def start(template):
     if request.method == 'POST':
         data = json.loads(request.data.decode('utf-8').replace('\0', ''))
-        print(data)
         if data["action"] == "sendQuestion":
             answer = make_answer(data["question"], data["dataset"])
             return make_response(json.dumps({"action": "setAnswer", "answer": answer}), 200, {"content_type": "application/json"})
@@ -92,7 +90,6 @@ def start(template):
 def datasets(template):
     if request.method == 'POST':
         data = json.loads(request.data.decode('utf-8').replace('\0', ''))
-        print(data)
         return make_response(json.dumps({"answer": data["question"]}), 200, {"content_type": "application/json"})
     else:
         d = json.dumps(serv.get_datasets_info())
@@ -136,12 +133,15 @@ def feedback(template):
             serv.delete_statistic(data["name"])
             s = json.dumps(serv.get_statistic_names())
             return make_response(json.dumps({"action": "reloadStatistics", "statisticNames": s}), 200, {"content_type": "application/json"})
+        elif data["action"] == "getNewMessages":
+            m = json.dumps(serv.get_new_messages(), default=str)
+            return make_response(json.dumps({"action": "setNewMessages", "messages": m}), 200, {"content_type": "application/json"})
+
         return make_response("ok")
     else:
         d = json.dumps(serv.get_dataset_names())
         s = json.dumps(serv.get_statistic_names())
-        # TO DO: move types list to settings or import from respondent
-        t = json.dumps(["string", "datetime", "currency", "float", "integer", "percent"])
+        t = json.dumps(types)
         return render_template(template, dataset_names=d, statistic_names=s, types=t)
 
 

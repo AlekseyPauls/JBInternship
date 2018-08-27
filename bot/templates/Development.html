@@ -134,10 +134,43 @@
         </div>
       </div>
 
-      <div id="feedback" class="tabcontent" style="display: none;">
-        <div>In progress...</div>
+      <div id="feedback" class="tabcontent" style="display: none; text-align: center;">
+        <button id="newMessages" class="accordion">New messages</button>
+        <div id="panel1" class="panel" style="display: none;">
+          <table class="table table-striped table-bordered" style="width: 100%">
+            <thead>
+              <tr>
+                <th style="width: 30%; text-align: center;">Date</th>
+                <th style="width: 70%; text-align: center;">Message</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyNewMessages"></tbody>
+          </table>
+        </div>
+
+        <button class="accordion">In work</button>
+        <div id="panel2" class="panel" style="display: none;">
+
+        </div>
+
+        <button class="accordion">Old messages</button>
+        <div id="panel3" class="panel" style="display: none;">
+
+        </div>
+
+        <button class="accordion">New logs</button>
+        <div id="panel4" class="panel" style="display: none;">
+
+        </div>
+
+        <button class="accordion">Old logs</button>
+        <div id="panel5" class="panel" style="display: none;">
+
+        </div>
       </div>
+
     </div>
+
 
     <div id="chooseType" class="modal fade my-font" role="dialog">
       <div class="vertical-alignment-helper">
@@ -202,9 +235,31 @@
       $('#typeNew').text(types[0])
       clearDatasetInfo()
       clearStatisticInfo()
+      clearTableBody("tbodyNewMessages")
 
 
-      xhr.onreadystatechange = function () {
+      var acc = document.getElementsByClassName("accordion");
+      for (var i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+          this.classList.toggle("active")
+          var panel = this.nextElementSibling
+          if (panel.style.display === "block") {
+            panel.style.display = "none"
+          } else {
+            panel.style.display = "block"
+          }
+          for (var j = 0; j < acc.length; j++) {
+            var p = acc[j].nextElementSibling
+            console.log(p.id + ", " + panel.id)
+            if (p.id !== panel.id && p.style.display !== "none") {
+              p.style.display = "none"
+              acc[j].classList.toggle("active")
+            }
+          }
+        })
+      }
+
+      xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
           var json = JSON.parse(xhr.responseText)
           console.log(json)
@@ -218,6 +273,8 @@
           } else if (json["action"] === "reloadStatistics") {
             generateList(JSON.parse(json["statisticNames"]), "statisticsList")
             clearStatisticInfo()
+          } else if (json["action"] === "setNewMessages") {
+            addNewMessages(JSON.parse(json["messages"]))
           }
         }
       }
@@ -317,6 +374,16 @@
       $('#typesList').on('click', 'a', function() {
         document.getElementById(document.getElementById('address').innerHTML).innerHTML = this.innerHTML
         $('#chooseType').modal('hide')
+      })
+
+      $('#newMessages').on('click', function() {
+        tb = document.getElementById("tbodyNewMessages")
+        if (tb.childNodes.length === 0) {
+          var data = JSON.stringify({"action": "getNewMessages"})
+          xhr.open("POST", "/development", true)
+          xhr.setRequestHeader("Content-Type", "application/json")
+          xhr.send(data)
+        }
       })
 
       $('#new1').on('click', function() {
@@ -690,6 +757,25 @@
         }
       }
 
+      function addNewMessages(mes) {
+        tb = document.getElementById("tbodyNewMessages")
+        for (var i = 0; i < mes.length; i++) {
+          var row = document.createElement("tr")
+          addCell(row, mes[i]["datetime"])
+          addCell(row, mes[i]["message"])
+          tb.appendChild(row)
+        }
+      }
+
+      function addCell(row, text) {
+        var td = document.createElement("td")
+        var div = document.createElement("div")
+        div.innerHTML = text
+        div.style = "height: 75px; overflow-y: auto;"
+        td.appendChild(div)
+        row.appendChild(td)
+      }
+
       function openTab(evt, tabName) {
         var i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tabcontent")
@@ -715,17 +801,21 @@
         }
       }
 
+      function clearTableBody(name, except="") {
+        var t = document.getElementById(name)
+        for (var i = t.childNodes.length - 1; i > -1; i--) {
+          if (t.childNodes[i].id !== except) {
+            t.childNodes[i].remove()
+          }
+        }
+      }
+
       function clearDatasetInfo() {
         $('#datasetName').val("")
         $('#datasetDescription').val("")
         $('#file1').val("")
         $('#filename1').val("")
-        var t = document.getElementById("tbodyFeatures")
-        for (var i = t.childNodes.length - 1; i > -1; i--) {
-          if (t.childNodes[i].id !== "newFeatureRow") {
-            t.childNodes[i].remove()
-          }
-        }
+        clearTableBody("tbodyFeatures", "newFeatureRow")
         clearNewFeature()
       }
 
@@ -734,12 +824,7 @@
         $('#statisticDescription').val("")
         $('#file2').val("")
         $('#filename2').val("")
-        var t = document.getElementById("tbodyTemplates")
-        for (var i = t.childNodes.length - 1; i > -1; i--) {
-          if (t.childNodes[i].id !== "newTemplateRow") {
-            t.childNodes[i].remove()
-          }
-        }
+        clearTableBody("tbodyTemplates", "newTemplateRow")
         clearNewTemplate()
       }
 
@@ -774,7 +859,7 @@
       /* Types recognition (string, datetime, integer, float, currency, percent) */
 
       function isDatetime(str) {
-        if (!Date.parse(str)) {
+        if (str.search(/[0-9]{1,2}[.\/][0-9]{1,2}[.\/][0-9]{1,4}/) === -1) {
          return false
         }
         return true

@@ -26,15 +26,6 @@ class Datasets(db.Model):
     def set_file(self, file):
         self.file = file
 
-    def get_name(self):
-        return self.name
-
-    def get_features(self):
-        return self.features
-
-    def get_description(self):
-        return self.description
-
     def get_info(self):
         features = self.features
         s = ""
@@ -80,12 +71,6 @@ class Statistics(db.Model):
     def set_file(self, file):
         self.file = file
 
-    def get_name(self):
-        return self.name
-
-    def get_description(self):
-        return self.description
-
     def get_info(self):
         templates = self.templates
         s = ""
@@ -109,10 +94,15 @@ class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String(500))
     datetime = db.Column(db.DateTime)
+    read = db.Column(db.Boolean)
 
-    def __init__(self, message, datetime):
+    def __init__(self, message, datetime, read=False):
         self.message = message
         self.datetime = datetime
+        self.read = read
 
     def __repr__(self):
         return self.id + ", " + self.message + ", " + self.datetime
+
+    def get(self):
+        return {"message": self.message, "datetime": self.datetime, "read": self.read}

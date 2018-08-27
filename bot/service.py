@@ -15,9 +15,9 @@ def save_feedback(mes):
 def find_dataset(question):
     ds = {}
     for dataset in Datasets.query.all():
-        ds_name = dataset.get_name()
+        ds_name = dataset.get_values()["name"]
         ds[ds_name] = 0
-        for feature in dataset.get_features():
+        for feature in dataset.get_values()["features"]:
             for name in variants(feature["name"]):
                 if name in question:
                     ds[ds_name] += 1
@@ -25,7 +25,6 @@ def find_dataset(question):
         if ds[ds_name] == 0:
             del ds[ds_name]
     sorted_ds = collections.OrderedDict(reversed(sorted(ds.items(), key=lambda t: t[1])))
-    print(sorted_ds)
     l = list(sorted_ds.keys())
     if len(l) >= 3:
         if (ds[l[0]] - (ds[l[0]] + ds[l[1]] + ds[l[2]]) / 3) <= 1:
@@ -72,6 +71,7 @@ def save_statistic(name, descriprion, templates, file):
 def delete_dataset(name):
     dataset = Datasets.query.filter_by(name=name).first()
     if dataset:
+        delete_file(dataset.get_values()["file"], "datasets")
         db.session.delete(dataset)
         db.session.commit()
 
@@ -79,8 +79,13 @@ def delete_dataset(name):
 def delete_statistic(name):
     statistic = Statistics.query.filter_by(name=name).first()
     if statistic:
+        delete_file(statistic.get_values()["file"], "statistics")
         db.session.delete(statistic)
         db.session.commit()
+
+
+def delete_file(name, folder):
+    os.remove(folder + "/" + name)
 
 
 def get_datasets_info():
@@ -100,7 +105,7 @@ def get_dataset_info(name):
 def get_datasets_short_info():
     res = ""
     for dataset in Datasets.query.all():
-        res += dataset.get_name() + ", " + dataset.get_description() + "\n"
+        res += dataset.get_values()["name"] + ", " + dataset.get_values()["description"] + "\n"
     return res
 
 
@@ -114,7 +119,7 @@ def get_dataset(name):
 def get_dataset_names():
     res = []
     for dataset in Datasets.query.all():
-        res.append(dataset.get_name())
+        res.append(dataset.get_values()["name"])
     return res
 
 
@@ -135,7 +140,7 @@ def get_statistic_info(name):
 def get_statistics_short_info():
     res = ""
     for statistic in Statistics.query.all():
-        res += statistic.get_name() + ", " + statistic.get_description() + "\n"
+        res += statistic.get_values()["name"] + ", " + statistic.get_values()["description"] + "\n"
     return res
 
 
@@ -157,7 +162,15 @@ def get_statistics():
 def get_statistic_names():
     res = []
     for statistic in Statistics.query.all():
-        res.append(statistic.get_name())
+        res.append(statistic.get_values()["name"])
+    return res
+
+
+def get_new_messages():
+    res = []
+    for feedback in Feedback.query.all():
+        if feedback.read == False:
+            res.append(feedback.get())
     return res
 
 
@@ -184,7 +197,6 @@ def my_sort(e):
 
 
 def clean(s):
-    print("Clean " + s)
     if s == "":
         return s
     while s != "" and s[0] == " ":

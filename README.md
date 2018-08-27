@@ -12,7 +12,7 @@ questions (call them 'statistics').
 
 ## Usage example
 
-We suggest that we have a data set with information on the number of users per month in several years. 
+We suggest that we have a dataset with information on the number of users per month in several years. 
 Now we ask a question: 
 
 "How many users were in the april?" (or simply "Users in april") 
@@ -83,37 +83,6 @@ database file and edit it manually). Adding new statistics is similar, but you n
 in the '.py' format, and the import of the templates is made from a separate file in '.csv' format containing 
 three columns: a question, a list of delimiters and the answer.
 
-To edit the dataset, select it, change it, and click the save button. To create new ones, select the 
-green dataset 'New' and enter the information.
-
-Now more about everything. Add the feature to the dataset:
-
-Name: year; Synonyms: "Year", "YEAR"; Type: integer; Values: "2017", "2016", "2018"
-
-'Name' is a name of column in data base, 'Synonyms' is a variants of writings this name in questions 
-(it is important to put different synonyms in quotes and separate from a comma), 'Type' is a kind of data in column, 
-'Values' is a values of this feature in data base (also in quotes and comma separated) - if the values are special, 
-or they are few and they do not coincide with the values of other features, you can write them out to improve 
-the search.
-
-Add the template to the statistic:
-
-Question: "What is variance of"; Delimiters: "in", "at"; Answer: "The variance is <>"
-
-'Question' is a trigger-string to choose this statistic (may be void only in "In" statistic, quotes and commas 
-are required), 'delimiters' is a list of strings which separate the arguments in the question (may be void if 
-statistic supports single-argument semantic), 'Answer' is a string of answer in which will be inserted data 
-instead of "<>" symbols (answer must contain "<>" symbols).
-
-Example of content in the file with templates:
-
-Question,Delimiters,Answer
-What,"['were', 'was']",The <>
-How many,"['were', 'was']",<>
-Mean of,"['']",Mean is <>
-
-Feedback - in progress
-
 ## Bot
 
 "This will be link to a bot-app page"
@@ -161,3 +130,72 @@ and try asking a question again
 6. If there was a problem with the recognition of the dataset, specify your arguments in the name of the feature 
 ("4535 users", "montn april")
 7. If nothing helped, then leave a feedback and the problem will be solved
+
+## Development
+
+### Dataset
+
+To edit the dataset, select it, change it, and click the save button. To create new ones, select the 
+green dataset 'New' and enter the information.
+
+#### Add the feature
+
+Example:
+
+Name: year; Synonyms: "Year", "YEAR"; Type: integer; Values: "2017", "2016", "2018"
+
+'Name' is a name of column in data base, 'Synonyms' is a variants of writings this name in questions 
+(it is important to put different synonyms in quotes and separate from a comma), 'Type' is a kind of data in column, 
+'Values' is a values of this feature in data base (also in quotes and comma separated) - if the values are special, 
+or they are few and they do not coincide with the values of other features, you can write them out to improve 
+the search.
+
+#### Import features
+
+When you select a file with a database, you can automatically extract features, their types and values, 
+and then edit them manually. To do this, click the import button in the new feature row.
+
+#### Prepare data
+
+To download data, it need to be prepared. It is enough to take into account several recommendations:
+
+1. Give the date in the form "DD.MM.YYYY" or "DD/MM/YYYY"
+2. If in your data, for example, month and year are different features then they are different entities and can`t be recognized as 
+one entity (date)
+
+### Statistic
+
+#### Add the template
+
+Question: "What is variance of"; Delimiters: "in", "at"; Answer: "The variance is <>"
+
+'Question' is a trigger-string to choose this statistic (may be void only in "In" statistic, quotes and commas 
+are required), 'delimiters' is a list of strings which separate the arguments in the question (may be void if 
+statistic supports single-argument semantic), 'Answer' is a string of answer in which will be inserted data 
+instead of "<>" symbols (answer must contain "<>" symbols).
+
+#### Import templates
+
+Example of content in the file with templates:
+
+Question,Delimiters,Answer<br/>
+What,"['were', 'was']",The <><br/>
+How many,"['were', 'was']",<><br/>
+Mean of,"['']",Mean is <><br/>
+
+#### Statistic script
+
+The statistics script is invoked by the application to find and process data from the database file. 
+This is a script in Python, which contains one function - "calc", which takes several arguments 
+(current_template, dataset, args1, connectors1, args2, connectors2) to the input and returns a string.
+The function should not handle exceptions and should do several things:
+1. Check the presence and number of arguments
+2. Implement behavior with single (main) argument, if necessary
+3. Find and use data in a file whose name is received at the input
+4. Process the intervals and connectors that come with the arguments
+5. If the necessary data were not found, then report it. If found, then substitute them for "<>" in response from the 
+template
+
+### Feedback
+
+Feedback - in progress

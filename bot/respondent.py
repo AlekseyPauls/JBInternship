@@ -3,15 +3,15 @@ from dateutil import parser
 import bot.service as serv
 from bot import log
 
-intervals = ["more ", "less ", "before ", "after "]
+
+intervals_up = ["more ", "after "]
+intervals_down = ["less ", "before"]
 connectors = ["and", "or"]
-
-
-""" Types: string, datetime, integer, float, money  """
+types = ["string", "datetime", "integer", "float", "money"]
 
 
 def make_answer(question, dataset):
-    try:
+    # try:
         input_question = question
 
         if question == "":
@@ -77,10 +77,10 @@ def make_answer(question, dataset):
         question = question.replace(current_template["question"].lower(), "")
 
         if (current_delimiter == ""):  # Single-argument template
-            args1, connectors1 = find_connectors(question)
-            args1 = find_features(args1, features)
             args2 = None
             connectors2 = None
+            args1, connectors1 = find_connectors(question)
+            args1 = find_features(args1, features)
         else:
             args = question.split(current_delimiter)
             args1, connectors1 = find_connectors(args[0])
@@ -105,13 +105,13 @@ def make_answer(question, dataset):
                                   "connectors2": connectors2
                                   })
         return res
-    except Exception as e:
-        log.info("answer", extra={"question": question,
-                                  "dataset": dataset,
-                                  "answerType": "exception",
-                                  "answer": traceback.format_exc(),
-                                  })
-        return "Something wrong (exception) was happened"
+    # except Exception as e:
+    #     log.info("answer", extra={"question": question,
+    #                               "dataset": dataset,
+    #                               "answerType": "exception",
+    #                               "answer": traceback.format_exc(),
+    #                               })
+    #     return "Something wrong (exception) was happened"
 
 
 def prepare_question(question):
@@ -123,7 +123,6 @@ def prepare_question(question):
 
 def find_template(statistics, question):
     for statistic in statistics:
-        print(statistic["name"])
         for template in statistic["templates"]:
             for q in serv.variants(template["question"]):
                 for delimiter in template["delimiters"]:
@@ -163,14 +162,19 @@ def find_connectors(s):
     return args, cons
 
 
-def find_features(args, features):
+def find_features(args, features, args2=None, connectors2=None):
     a = []
     for arg in args:
         x = {}
         x["interval"] = ""
-        for interval in intervals:
+        for interval in intervals_up:
             if interval in arg:
-                x["interval"] = serv.clean(interval)
+                x["interval"] = "up"
+                arg = arg.replace(interval, "")
+                break
+        for interval in intervals_down:
+            if interval in arg:
+                x["interval"] = "down"
                 arg = arg.replace(interval, "")
                 break
         ft, val = get_feature_by_name(arg, features)
@@ -184,15 +188,19 @@ def find_features(args, features):
     return a
 
 
+def fix_hard_interval(arg):
+    pass
+
+
 def get_feature_by_name(arg, features):
     for feature in features:
-        if feature["name"] in arg:
-            val = get_arg_by_values(arg.replace(feature["name"], ""), feature["values"])
+        if feature["name"].lower() in arg:
+            val = get_arg_by_values(arg.replace(feature["name"].lower(), ""), feature["values"])
             val = get_arg_by_type(val, feature["type"])
             return feature["name"], val
         for syn in feature["synonyms"]:
-            if syn != "" and syn in arg:
-                val = get_arg_by_values(arg.replace(syn, ""), feature["values"])
+            if syn != "" and syn.lower() in arg:
+                val = get_arg_by_values(arg.replace(syn.lower(), ""), feature["values"])
                 val = get_arg_by_type(val, feature["type"])
                 return feature["name"], val
     return None, None
@@ -201,7 +209,7 @@ def get_feature_by_name(arg, features):
 def get_feature_by_values(arg, features):
     for feature in features:
         for val in feature["values"]:
-            if val != "" and val in arg:
+            if val != "" and val.lower() in arg:
                 val = get_arg_by_type(val, feature["type"])
                 return feature["name"], val
     return None, None
@@ -223,7 +231,7 @@ def get_feature_by_type(arg, features):
 
 def get_arg_by_values(arg, values):
     for value in values:
-        if value in arg:
+        if value.lower() in arg:
             return value
     return arg
 
@@ -232,11 +240,17 @@ def get_arg_by_type(arg, type):
     if serv.clean(arg) == "":
         return None
     elif type == "datetime":
-        return get_datetime(serv.clean(arg))
+        res = get_datetime(arg)
+        if res is not None:
+            return "\"" + res + "\""
     elif type == "currency":
-        return get_currency(arg)
+        res = get_currency(arg)
+        if res is not None:
+            return "\"" + res + "\""
     elif type == "percent":
-        return get_percent(arg)
+        res = get_percent(arg)
+        if res is not None:
+            return "\"" + res + "\""
     elif type == "float":
         return get_float(arg)
     elif type == "integer":
@@ -264,24 +278,35 @@ def get_type(s):
 
 # TO DO: make it better
 def get_datetime(s):
-    try:
-        t = parser.parse(s)
-        return t
-    except ValueError:
-        return None
+    r = re.search(r'[0-9]{1,2}[.\/][0-9]{1,2}[.\/][0-9]{1,4}', s).group(0)
+    if r is not None:
+        return r.group(0)
+    return None
 
 
 def get_currency(s):
-    return re.search(r'([$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦]\s*[0-9])|([0-9]\s*[$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦])', s).group(0)
+    r = re.search(r'([$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦]\s*[0-9])|([0-9]\s*[$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦])', s).group(0)
+    if r is not None:
+        return r.group(0)
+    return None
 
 
 def get_percent(s):
-    return re.search(r'[0-9]+\s*%', s).group(0)
+    r = re.search(r'[0-9]+\s*%', s).group(0)
+    if r is not None:
+        return r.group(0)
+    return None
 
 
 def get_float(s):
-    return re.search(r'([0-9]*[.,][0-9]+)|([0-9]+[.,][0-9]*)', s).group(0)
+    r = re.search(r'([0-9]*[.,][0-9]+)|([0-9]+[.,][0-9]*)', s).group(0)
+    if r is not None:
+        return r.group(0)
+    return None
 
 
 def get_integer(s):
-    return re.search(r'[0-9]+', s).group(0)
+    r = re.search(r'[0-9]+', s)
+    if r is not None:
+        return r.group(0)
+    return None

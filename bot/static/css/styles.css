@@ -136,6 +136,7 @@ div.modal-content {
     border: none;
     outline: none;
     text-align: left;
+    font-size: 16px;
     cursor: pointer;
     transition: 0.3s;
 }
@@ -253,9 +254,36 @@ div.modal-content {
 
 .tab-elem {
     float: left;
-    margin: 15px;
+    margin-top: 15px;
+    margin-left: 15px;
     background-color: #f6f6f6;
     overflow: auto;
     overflow-x: hidden;
     border: 1px solid #ddd;
+}
+
+/* Style the buttons that are used to open and close the accordion panel */
+.accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    text-align: left;
+    font-size: 18px;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .accordion:hover {
+    background-color: #ccc;
+}
+
+/* Style the accordion panel. Note: hidden by default */
+.panel {
+    padding: 0 18px;
+    background-color: white;
+    overflow: hidden;
 }
