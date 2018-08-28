@@ -93,16 +93,35 @@ class Statistics(db.Model):
 class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String(500))
+    question = db.Column(db.String(300))
+    answer = db.Column(db.String(300))
     datetime = db.Column(db.DateTime)
-    read = db.Column(db.Boolean)
 
-    def __init__(self, message, datetime, read=False):
+    def __init__(self, message, question, answer, datetime):
         self.message = message
         self.datetime = datetime
-        self.read = read
+        self.question = question
+        self.answer = answer
 
     def __repr__(self):
-        return self.id + ", " + self.message + ", " + self.datetime
+        return str(self.id) + ", " + self.message + ", " + self.datetime + ", " + self.question + ", " + self.answer
 
     def get(self):
-        return {"message": self.message, "datetime": self.datetime, "read": self.read}
+        return {"id": self.id, "message": self.message, "datetime": self.datetime, "question": self.question,
+                "answer": self.answer}
+
+
+class Logs(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    json = db.Column(db.JSON)
+
+    def __init__(self, json, read=False, work=False):
+        self.json = json
+        self.read = read
+        self.work = work
+
+    def __repr__(self):
+        return str(self.id) + ", " + self.json
+
+    def get(self):
+        return {"id": self.id, "json": self.json}

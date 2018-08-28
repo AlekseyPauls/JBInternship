@@ -78,7 +78,7 @@ def start(template):
             answer = make_answer(data["question"], data["dataset"])
             return make_response(json.dumps({"action": "setAnswer", "answer": answer}), 200, {"content_type": "application/json"})
         elif data["action"] == "sendFeedback":
-            serv.save_feedback(data["feedback"])
+            serv.save_feedback(data["message"], data["question"], data["answer"])
             return make_response(json.dumps({"action": "setFeedback", "answer": "Thank you for the help!"}), 200, {"content_type": "application/json"})
     else:
         dataset_names = json.dumps(serv.get_dataset_names())
@@ -133,9 +133,12 @@ def feedback(template):
             serv.delete_statistic(data["name"])
             s = json.dumps(serv.get_statistic_names())
             return make_response(json.dumps({"action": "reloadStatistics", "statisticNames": s}), 200, {"content_type": "application/json"})
-        elif data["action"] == "getNewMessages":
-            m = json.dumps(serv.get_new_messages(), default=str)
-            return make_response(json.dumps({"action": "setNewMessages", "messages": m}), 200, {"content_type": "application/json"})
+        elif data["action"] == "getMessages":
+            m = json.dumps(serv.get_messages(), default=str)
+            return make_response(json.dumps({"action": "setMessages", "messages": m}), 200, {"content_type": "application/json"})
+        elif data["action"] == "getLogs":
+            l = json.dumps(serv.get_logs(), default=str)
+            return make_response(json.dumps({"action": "setLogs", "logs": l}), 200, {"content_type": "application/json"})
 
         return make_response("ok")
     else:

@@ -1,23 +1,28 @@
 import os, json, csv, ast, collections
 from datetime import datetime
-from bot.models import Datasets, Statistics, Feedback
+from bot.models import Datasets, Statistics, Feedback, Logs
 from bot import db
 
 
 db.create_all()
 
 
-def save_feedback(mes):
-    db.session.add(Feedback(mes, datetime.utcnow()))
+def save_feedback(mes, que, ans):
+    db.session.add(Feedback(mes, que, ans, datetime.utcnow()))
+    db.session.commit()
+
+
+def save_log(log):
+    db.session.add(Logs(log))
     db.session.commit()
 
 
 def find_dataset(question):
     ds = {}
     for dataset in Datasets.query.all():
-        ds_name = dataset.get_values()["name"]
+        ds_name = dataset.name
         ds[ds_name] = 0
-        for feature in dataset.get_values()["features"]:
+        for feature in dataset.features:
             for name in variants(feature["name"]):
                 if name in question:
                     ds[ds_name] += 1
@@ -71,7 +76,7 @@ def save_statistic(name, descriprion, templates, file):
 def delete_dataset(name):
     dataset = Datasets.query.filter_by(name=name).first()
     if dataset:
-        delete_file(dataset.get_values()["file"], "datasets")
+        delete_file(dataset.file, "datasets")
         db.session.delete(dataset)
         db.session.commit()
 
@@ -79,7 +84,7 @@ def delete_dataset(name):
 def delete_statistic(name):
     statistic = Statistics.query.filter_by(name=name).first()
     if statistic:
-        delete_file(statistic.get_values()["file"], "statistics")
+        delete_file(statistic.file, "statistics")
         db.session.delete(statistic)
         db.session.commit()
 
@@ -105,7 +110,7 @@ def get_dataset_info(name):
 def get_datasets_short_info():
     res = ""
     for dataset in Datasets.query.all():
-        res += dataset.get_values()["name"] + ", " + dataset.get_values()["description"] + "\n"
+        res += dataset.name + ", " + dataset.description + "\n"
     return res
 
 
@@ -119,7 +124,7 @@ def get_dataset(name):
 def get_dataset_names():
     res = []
     for dataset in Datasets.query.all():
-        res.append(dataset.get_values()["name"])
+        res.append(dataset.name)
     return res
 
 
@@ -140,7 +145,7 @@ def get_statistic_info(name):
 def get_statistics_short_info():
     res = ""
     for statistic in Statistics.query.all():
-        res += statistic.get_values()["name"] + ", " + statistic.get_values()["description"] + "\n"
+        res += statistic.name + ", " + statistic.description + "\n"
     return res
 
 
@@ -155,22 +160,28 @@ def get_statistics():
     res = []
     for statistic in Statistics.query.all():
         res.append(statistic.get_values())
-    res.sort(key=my_sort, reverse=True)
+    res.sort(key=statistic_sort, reverse=True)
     return res
 
 
 def get_statistic_names():
     res = []
     for statistic in Statistics.query.all():
-        res.append(statistic.get_values()["name"])
+        res.append(statistic.name)
     return res
 
 
-def get_new_messages():
+def get_messages():
     res = []
     for feedback in Feedback.query.all():
-        if feedback.read == False:
-            res.append(feedback.get())
+        res.append(feedback.get())
+    return res
+
+
+def get_logs():
+    res = []
+    for log in Logs.query.all():
+        res.append(log.get())
     return res
 
 
@@ -188,7 +199,7 @@ def variants(word):
     return res
 
 
-def my_sort(e):
+def statistic_sort(e):
     min = len(e["templates"][0]["question"])
     for template in e["templates"]:
         if len(template["question"]) < min:

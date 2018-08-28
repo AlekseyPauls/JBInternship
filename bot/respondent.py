@@ -1,5 +1,5 @@
 import importlib, collections, re, csv, traceback
-from dateutil import parser
+from datetime import datetime
 import bot.service as serv
 from bot import log
 
@@ -11,15 +11,11 @@ types = ["string", "datetime", "integer", "float", "money"]
 
 
 def make_answer(question, dataset):
-    # try:
+    try:
         input_question = question
 
         if question == "":
-            log.info("answer", extra={"question": input_question,
-                                      "dataset": dataset,
-                                      "answerType": "error",
-                                      "answer": "Void question"
-                                      })
+            serv.save_log(get_log(input_question, dataset, "error", "Void question"))
             return "Void question"
 
         statistics = serv.get_statistics()
@@ -35,11 +31,7 @@ def make_answer(question, dataset):
             if ds["type"] == "one":
                 dataset = ds["dataset"]
             elif ds["type"] == "none":
-                log.info("answer", extra={"question": input_question,
-                                          "dataset": dataset,
-                                          "answerType": "error",
-                                          "answer": "No suitable dataset"
-                                          })
+                serv.save_log(get_log(input_question, dataset, "error", "No suitable dataset"))
                 return "No suitable dataset. Please, remake your question by the rules (use \"/rules\" command)"
             else:
                 s = "There are several suitable datasets: "
@@ -47,71 +39,64 @@ def make_answer(question, dataset):
                     dst = serv.get_dataset(name)
                     s += dst["name"] + " (" + dst["description"] + "), "
                 s = s[:-2]
-                s += ". \nSpecify the one you need with the \"-d\" key at the end of the question (for example: \"What kind of animal is a cat? -d=Animals\")."
-                log.info("answer", extra={"question": input_question,
-                                          "dataset": dataset,
-                                          "answerType": "error",
-                                          "answer": "Several suitable datasets"
-                                          })
+                s += ". \nSpecify the one you need with the \"-d\" key at the end of the question."
+                serv.save_log(get_log(input_question, dataset, "error", "Several suitable datasets"))
                 return s
 
         ds = serv.get_dataset(dataset)
         if not ds:
-            log.info("answer", extra={"question": input_question,
-                                      "dataset": dataset,
-                                      "answerType": "error",
-                                      "answer": "No dataset in database"
-                                      })
+            serv.save_log(get_log(input_question, dataset, "error", "No such dataset in the database"))
             return "Wrong dataset. There is no dataset with this name."
         features, file = ds['features'], ds['file']
 
         current_statistic, current_template, current_delimiter = find_template(statistics, question)
 
         if current_template == {}:
-            log.info("answer", extra={"question": input_question,
-                                      "dataset": dataset,
-                                      "answerType": "error",
-                                      "answer": "No suitable dataset"
-                                      })
+            serv.save_log(get_log(input_question, dataset, "error", "No suitable dataset"))
             return "Have no suitable template (can't understand your question)"
         question = question.replace(current_template["question"].lower(), "")
 
-        if (current_delimiter == ""):  # Single-argument template
-            args2 = None
-            connectors2 = None
-            args1, connectors1 = find_connectors(question)
-            args1 = find_features(args1, features)
+        if (current_delimiter == ""):
+            args = [question, ""]
         else:
             args = question.split(current_delimiter)
-            args1, connectors1 = find_connectors(args[0])
-            args2, connectors2 = find_connectors(args[1])
-            args1 = find_features(args1, features)
-            args2 = find_features(args2, features)
+
+        args1, connectors1 = find_connectors(args[0])
+        args2, connectors2 = find_connectors(args[1])
+        args1 = find_features(args1, features)
+        args2 = find_features(args2, features)
+
+        if args1 is "More than one" or args2 is "More than one":
+            serv.save_log(get_log(input_question, dataset, "error", "Ambiguity"))
+            return "Please, specify values in question with entity names - during the recognition of the feature " \
+                   "ambiguity appeared"
 
         stat = importlib.import_module("statistics." + current_statistic["file"][:-3])
         calc = getattr(stat, "calc")
         res = calc(current_template, file, args1, connectors1, args2, connectors2)
 
-        log.info("answer", extra={"question": input_question,
-                                  "dataset": dataset,
-                                  "answerType": "correct",
-                                  "answer": res,
-                                  "statistic": current_statistic,
-                                  "delimiter": current_delimiter,
-                                  "template": current_template,
-                                  "args1": args1,
-                                  "args2": args2,
-                                  "connectors1": connectors1,
-                                  "connectors2": connectors2
-                                  })
+        serv.save_log(get_log(input_question, dataset, "correct", res, current_statistic["name"], current_delimiter,
+                                            current_template, args1, args2, connectors1, connectors2))
         return res
-    # except Exception as e:
-    #     log.info("answer", extra={"question": question,
-    #                               "dataset": dataset,
-    #                               "answerType": "exception",
-    #                               "answer": traceback.format_exc(),
-    #                               })
-    #     return "Something wrong (exception) was happened"
+    except Exception as e:
+        serv.save_log(get_log(question, dataset, "exception", traceback.format_exc()))
+        return "Something wrong (exception) was happened"
+
+
+def get_log(iq=None, dt=None, at=None, a=None, s=None, d=None, t=None, a1=None, a2=None, c1=None, c2=None):
+    return {"datetime": str(datetime.utcnow()),
+            "question": iq,
+            "dataset": dt,
+            "answerType": at,
+            "answer": a,
+            "statistic": s,
+            "delimiter": d,
+            "template": t,
+            "args1": a1,
+            "args2": a2,
+            "connectors1": c1,
+            "connectors2": c2
+            }
 
 
 def prepare_question(question):
@@ -162,7 +147,7 @@ def find_connectors(s):
     return args, cons
 
 
-def find_features(args, features, args2=None, connectors2=None):
+def find_features(args, features):
     a = []
     for arg in args:
         x = {}
@@ -182,9 +167,14 @@ def find_features(args, features, args2=None, connectors2=None):
             ft, val = get_feature_by_values(arg, features)
         if ft is None:
             ft, val = get_feature_by_type(arg, features)
-        x["feature"], x["value"] = ft, val
-        a.append(x)
+        if ft is "More than one":
+            return "More than one"
+        if ft is not None:
+            x["feature"], x["value"] = ft, val
+            a.append(x)
 
+    if len(a) == 0:
+        return None
     return a
 
 
@@ -223,7 +213,7 @@ def get_feature_by_type(arg, features):
             f = feature
             counter += 1
     if counter > 1:
-        return "More then one match"
+        return "More than one"
     if counter == 1:
         return f["name"], get_arg_by_type(arg, f["type"])
     return None, None
@@ -272,34 +262,36 @@ def get_type(s):
         return "float"
     elif get_integer(s):
         return "integer"
-    else:
+    elif s != "":
         return "string"
+    else:
+        return None
 
 
 # TO DO: make it better
 def get_datetime(s):
-    r = re.search(r'[0-9]{1,2}[.\/][0-9]{1,2}[.\/][0-9]{1,4}', s).group(0)
+    r = re.search(r'[0-9]{1,2}[.\/][0-9]{1,2}[.\/][0-9]{1,4}', s)
     if r is not None:
         return r.group(0)
     return None
 
 
 def get_currency(s):
-    r = re.search(r'([$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦]\s*[0-9])|([0-9]\s*[$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦])', s).group(0)
+    r = re.search(r'([$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦]\s*[0-9])|([0-9]\s*[$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦])', s)
     if r is not None:
         return r.group(0)
     return None
 
 
 def get_percent(s):
-    r = re.search(r'[0-9]+\s*%', s).group(0)
+    r = re.search(r'[0-9]+\s*%', s)
     if r is not None:
         return r.group(0)
     return None
 
 
 def get_float(s):
-    r = re.search(r'([0-9]*[.,][0-9]+)|([0-9]+[.,][0-9]*)', s).group(0)
+    r = re.search(r'([0-9]*[.,][0-9]+)|([0-9]+[.,][0-9]*)', s)
     if r is not None:
         return r.group(0)
     return None

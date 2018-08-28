@@ -52,7 +52,7 @@
               <button type="button" id="deleteDataset" class="btn btn-primary my-btn">Delete</button>
             </div>
           </div>
-          <div class="tab-elem" style="min-width: 700px; height: 500px; width: 55%;">
+          <div class="tab-elem" style="min-width: 900px; height: 500px; width: 55%;">
             <div class="header-label" style="padding: 10px;">Features</div>
             <table class="table table-striped table-bordered" style="width: 100%">
               <thead>
@@ -107,7 +107,7 @@
               <button type="button" id="deleteStatistic" class="btn btn-primary my-btn">Delete</button>
             </div>
           </div>
-          <div class="tab-elem" style="min-width: 700px; height: 500px; width: 55%;">
+          <div class="tab-elem" style="min-width: 900px; height: 500px; width: 55%;">
             <div class="header-label" style="padding: 10px;">Templates</div>
             <table class="table table-striped table-bordered" style="width: 100%">
               <thead>
@@ -135,37 +135,48 @@
       </div>
 
       <div id="feedback" class="tabcontent" style="display: none; text-align: center;">
-        <button id="newMessages" class="accordion">New messages</button>
+        <button id="messages" class="accordion">Messages</button>
         <div id="panel1" class="panel" style="display: none;">
-          <table class="table table-striped table-bordered" style="width: 100%">
-            <thead>
-              <tr>
-                <th style="width: 30%; text-align: center;">Date</th>
-                <th style="width: 70%; text-align: center;">Message</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyNewMessages"></tbody>
-          </table>
+          <div style=" overflow: auto; height: 500px;">
+            <table class="table table-striped table-bordered" style="width: 100%; border: 10px solid #ddd;">
+              <thead>
+                <tr>
+                  <th style="width: 0%; display: none;"></th>
+                  <th style="width: 20%; min-width: 170px; text-align: center;" onclick="sortRows(1, 'tbodyMessages')">Date</th>
+                  <th style="width: 25%; min-width: 170px; text-align: center;" onclick="sortRows(2, 'tbodyMessages')">Question</th>
+                  <th style="width: 25%; min-width: 170px; text-align: center;" onclick="sortRows(3, 'tbodyMessages')">Answer</th>
+                  <th style="width: 30%; min-width: 500px;text-align: center;" onclick="sortRows(4, 'tbodyMessages')">Message</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyMessages"></tbody>
+            </table>
+          </div>
+          <input type="text" placeholder="Search..." id="fMessages" class="form-control my-input-small" style="width:
+            400px; margin: 15px; float: left;" onkeyup="filterRows('fMessages', 'tbodyMessages')">
+          <button type="button" id="exportMessages" class="btn btn-success my-btn" style="margin: 15px; float: left;">Export</button>
         </div>
 
-        <button class="accordion">In work</button>
+        <button id="logs" class="accordion">Logs</button>
         <div id="panel2" class="panel" style="display: none;">
-
-        </div>
-
-        <button class="accordion">Old messages</button>
-        <div id="panel3" class="panel" style="display: none;">
-
-        </div>
-
-        <button class="accordion">New logs</button>
-        <div id="panel4" class="panel" style="display: none;">
-
-        </div>
-
-        <button class="accordion">Old logs</button>
-        <div id="panel5" class="panel" style="display: none;">
-
+          <div style=" overflow: auto; height: 500px;">
+            <table class="table table-striped table-bordered" style="width: 100%; border: 10px solid #ddd;">
+              <thead>
+                <tr>
+                  <th style="width: 0%; display: none;"></th>
+                  <th style="width: 10%; min-width: 170px; text-align: center;" onclick="sortRows(1, 'tbodyLogs')">Date</th>
+                  <th style="width: 15%; min-width: 250px; text-align: center;" onclick="sortRows(2, 'tbodyLogs')">Question</th>
+                  <th style="width: 10%; min-width: 170px; text-align: center;" onclick="sortRows(3, 'tbodyLogs')">Dataset</th>
+                  <th style="width: 10%; min-width: 170px; text-align: center;" onclick="sortRows(4, 'tbodyLogs')">Answer type</th>
+                  <th style="width: 15; min-width: 250px; text-align: center;" onclick="sortRows(5, 'tbodyLogs')">Answer</th>
+                  <th style="width: 40%; min-width: 400px; text-align: center;" onclick="sortRows(6, 'tbodyLogs')">Info</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyLogs"></tbody>
+            </table>
+          </div>
+          <input type="text" placeholder="Search..." id="fLogs" class="form-control my-input-small" style="width:
+            400px; margin: 15px; float: left;" onkeyup="filterRows('fLogs', 'tbodyLogs')">
+          <button type="button" id="exportLogs" class="btn btn-success my-btn" style="margin: 15px; float: left;">Export</button>
         </div>
       </div>
 
@@ -235,7 +246,8 @@
       $('#typeNew').text(types[0])
       clearDatasetInfo()
       clearStatisticInfo()
-      clearTableBody("tbodyNewMessages")
+      clearTableBody("tbodyMessages")
+      clearTableBody("tbodyLogs")
 
 
       var acc = document.getElementsByClassName("accordion");
@@ -273,8 +285,10 @@
           } else if (json["action"] === "reloadStatistics") {
             generateList(JSON.parse(json["statisticNames"]), "statisticsList")
             clearStatisticInfo()
-          } else if (json["action"] === "setNewMessages") {
-            addNewMessages(JSON.parse(json["messages"]))
+          } else if (json["action"] === "setMessages") {
+            addMessages(JSON.parse(json["messages"]))
+          } else if (json["action"] === "setLogs") {
+            addLogs(JSON.parse(json["logs"]))
           }
         }
       }
@@ -307,11 +321,8 @@
           $('#modal').modal('show')
         } else {
           f = saveFeatures()
-          var data = JSON.stringify({"action": "saveDataset", "name": $('#datasetName').val(),
+          send({"action": "saveDataset", "name": $('#datasetName').val(),
             "description": $('#datasetDescription').val(), "features": f, "file": $('#filename1').val()})
-          xhr.open("POST", "/development", true)
-          xhr.setRequestHeader("Content-Type", "application/json")
-          xhr.send(data)
         }
       })
 
@@ -344,26 +355,17 @@
           $('#modal').modal('show')
         } else {
           f = saveTemplates()
-          var data = JSON.stringify({"action": "saveStatistic", "name": $('#statisticName').val(),
+          send({"action": "saveStatistic", "name": $('#statisticName').val(),
             "description": $('#statisticDescription').val(), "templates": f, "file": $('#filename2').val()})
-          xhr.open("POST", "/development", true)
-          xhr.setRequestHeader("Content-Type", "application/json")
-          xhr.send(data)
         }
       })
 
       $('#deleteDataset').on('click', function() {
-        var data = JSON.stringify({"action": "deleteDataset", "name": $('#datasetName').val()})
-        xhr.open("POST", "/development", true)
-        xhr.setRequestHeader("Content-Type", "application/json")
-        xhr.send(data)
+        send({"action": "deleteDataset", "name": $('#datasetName').val()})
       })
 
       $('#deleteStatistic').on('click', function() {
-        var data = JSON.stringify({"action": "deleteStatistic", "name": $('#statisticName').val()})
-        xhr.open("POST", "/development", true)
-        xhr.setRequestHeader("Content-Type", "application/json")
-        xhr.send(data)
+        send({"action": "deleteStatistic", "name": $('#statisticName').val()})
       })
 
       $(".file-input").change(function(){
@@ -376,13 +378,17 @@
         $('#chooseType').modal('hide')
       })
 
-      $('#newMessages').on('click', function() {
-        tb = document.getElementById("tbodyNewMessages")
+      $('#messages').on('click', function() {
+        tb = document.getElementById("tbodyMessages")
         if (tb.childNodes.length === 0) {
-          var data = JSON.stringify({"action": "getNewMessages"})
-          xhr.open("POST", "/development", true)
-          xhr.setRequestHeader("Content-Type", "application/json")
-          xhr.send(data)
+          send({"action": "getMessages"})
+        }
+      })
+
+      $('#logs').on('click', function() {
+        tb = document.getElementById("tbodyLogs")
+        if (tb.childNodes.length === 0) {
+          send({"action": "getLogs"})
         }
       })
 
@@ -515,6 +521,13 @@
         $('#modal').modal('show')
       }
 
+      function send(data) {
+        var d = JSON.stringify(data)
+        xhr.open("POST", "/development", true)
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(d)
+      }
+
       function generateList(list, place) {
         pl = document.getElementById(place)
         for (var i = pl.childNodes.length - 1; i > 5; i--) {
@@ -529,10 +542,7 @@
       }
 
       function getInfo(obj, name) {
-        var data = JSON.stringify({"action": "get" + obj + "Info", "name": name})
-        xhr.open("POST", "/development", true)
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(data)
+        send({"action": "get" + obj + "Info", "name": name})
       }
 
       function saveFeatures() {
@@ -757,21 +767,51 @@
         }
       }
 
-      function addNewMessages(mes) {
-        tb = document.getElementById("tbodyNewMessages")
+      function addMessages(mes) {
+        tb = document.getElementById("tbodyMessages")
         for (var i = 0; i < mes.length; i++) {
           var row = document.createElement("tr")
-          addCell(row, mes[i]["datetime"])
-          addCell(row, mes[i]["message"])
+          addIdDiv(row, mes[i]["id"])
+          addDiv(row, "height: 75px; overflow-y: auto;", mes[i]["datetime"])
+          addDiv(row, "height: 75px; overflow-y: auto;", mes[i]["question"])
+          addDiv(row, "height: 75px; overflow-y: auto;", mes[i]["answer"])
+          addDiv(row, "height: 75px; overflow-y: auto;", mes[i]["message"])
           tb.appendChild(row)
         }
       }
 
-      function addCell(row, text) {
+      function addLogs(logs) {
+        tb = document.getElementById("tbodyLogs")
+        for (var i = 0; i < logs.length; i++) {
+          var log = logs[i]["json"]
+          var row = document.createElement("tr")
+
+          addIdDiv(row, logs[i]["id"])
+          addDiv(row, "height: 75px; overflow-y: auto;", log["datetime"])
+          addDiv(row, "height: 75px; overflow-y: auto;", log["question"])
+          addDiv(row, "height: 75px; overflow-y: auto;", log["dataset"])
+          addDiv(row, "height: 75px; overflow-y: auto;", log["answerType"])
+          addDiv(row, "height: 75px; overflow-y: auto;", log["answer"])
+          addDiv(row, "height: 75px; overflow-y: auto;", log["question"])
+
+          tb.appendChild(row)
+        }
+      }
+
+      function addIdDiv(row, text) {
         var td = document.createElement("td")
         var div = document.createElement("div")
         div.innerHTML = text
-        div.style = "height: 75px; overflow-y: auto;"
+        td.style = "display: None; width: 0%;"
+        td.appendChild(div)
+        row.appendChild(td)
+      }
+
+      function addDiv(row, style, text) {
+        var td = document.createElement("td")
+        var div = document.createElement("div")
+        div.innerHTML = text
+        div.style = style
         td.appendChild(div)
         row.appendChild(td)
       }
@@ -842,17 +882,55 @@
       }
 
       function filterFunction(inp, outp) {
-        var input, filter, a, i, div
-        input = document.getElementById(inp)
-        filter = input.value.toUpperCase()
-        div = document.getElementById(outp)
-        a = div.getElementsByTagName("a")
-        for (i = 0; i < a.length; i++) {
+        var filter = document.getElementById(inp).value.toUpperCase()
+        var div = document.getElementById(outp)
+        var a = div.getElementsByTagName("a")
+        for (var i = 0; i < a.length; i++) {
           if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
             a[i].style.display = ""
           } else {
             a[i].style.display = "none"
           }
+        }
+      }
+
+      function filterRows(inp, outp) {
+        var filter = document.getElementById(inp).value.toUpperCase()
+        var tbody = document.getElementById(outp)
+        for (var i = 0; i < tbody.childNodes.length; i++) {
+          tbody.childNodes[i].style.display = "none"
+          for (var j = 0; j < tbody.childNodes[i].childNodes.length; j++) {
+            if (tbody.childNodes[i].childNodes[j].childNodes[0].innerHTML.toUpperCase().indexOf(filter) > -1) {
+              tbody.childNodes[i].style.display = ""
+            }
+          }
+        }
+      }
+
+      function sortRows(inp, outp) {
+        var tbody = document.getElementById(outp)
+        var itemsArr = []
+        for (var i = 0; i < tbody.childNodes.length; i++) {
+            itemsArr.push(tbody.childNodes[i])
+        }
+        if (itemsArr.length < 2) {
+          return null
+        }
+        if (itemsArr[0].childNodes[inp].childNodes[0].innerHTML < itemsArr[itemsArr.length - 1].childNodes[inp].childNodes[0].innerHTML) {
+          itemsArr.sort(function(a, b) {
+            return a.childNodes[inp].childNodes[0].innerHTML == b.childNodes[inp].childNodes[0].innerHTML
+              ? 0
+              : (a.childNodes[inp].childNodes[0].innerHTML < b.childNodes[inp].childNodes[0].innerHTML ? 1 : -1)
+          })
+        } else {
+          itemsArr.sort(function(a, b) {
+            return a.childNodes[inp].childNodes[0].innerHTML == b.childNodes[inp].childNodes[0].innerHTML
+              ? 0
+              : (a.childNodes[inp].childNodes[0].innerHTML > b.childNodes[inp].childNodes[0].innerHTML ? 1 : -1)
+          })
+        }
+        for (i = 0; i < itemsArr.length; ++i) {
+          tbody.appendChild(itemsArr[i])
         }
       }
 
