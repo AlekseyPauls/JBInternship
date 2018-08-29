@@ -121,7 +121,11 @@ Here are a few simple rules:
 1. Formulate simple questions consisting of a question, the main argument (what information is being searched for), 
 a delimiter (often a preposition), and a dependent argument (a condition, usually a specific value or an 
 interval of a feature)
-2. To enter multiple arguments of the first or second type, separate them explicitly with the words "and" and "or"
+2. To enter multiple arguments of the first or second type, separate them explicitly with the words "and" and "or" 
+(don`t use commas)
+3. Don`t use hard dependencies when one feature depends on another in one argument 
+(for example, "Mean of users after 2017 year"). You can achieve the same effect by slightly changing the question 
+("Mean of users in year after 2017") - now dependence of the features is explicit.
 3. If you want to add an interval ("more", "less") for a group of arguments, make it for each individual entity
 4. Do not use unnecessary words, like adjectives. If you did not receive an answer, try to delete the unnecessary 
 words and articles

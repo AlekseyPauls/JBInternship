@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="/static/css/styles.css">
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
-      <script src="/static/js/papaparse.min.js"></script>
+    <script src="/static/js/papaparse.min.js"></script>
+    <script src="/static/js/service.js"></script>
 
   </head>
   <body class="my-font">
@@ -142,10 +143,10 @@
               <thead>
                 <tr>
                   <th style="width: 0%; display: none;"></th>
-                  <th style="width: 20%; min-width: 170px; text-align: center;" onclick="sortRows(1, 'tbodyMessages')">Date</th>
-                  <th style="width: 25%; min-width: 170px; text-align: center;" onclick="sortRows(2, 'tbodyMessages')">Question</th>
-                  <th style="width: 25%; min-width: 170px; text-align: center;" onclick="sortRows(3, 'tbodyMessages')">Answer</th>
-                  <th style="width: 30%; min-width: 500px;text-align: center;" onclick="sortRows(4, 'tbodyMessages')">Message</th>
+                  <th style="min-width: 170px; text-align: center;" onclick="sortRows(1, 'tbodyMessages')">Date</th>
+                  <th style="min-width: 170px; text-align: center;" onclick="sortRows(2, 'tbodyMessages')">Question</th>
+                  <th style="min-width: 170px; text-align: center;" onclick="sortRows(3, 'tbodyMessages')">Answer</th>
+                  <th style="min-width: 500px;text-align: center;" onclick="sortRows(4, 'tbodyMessages')">Message</th>
                 </tr>
               </thead>
               <tbody id="tbodyMessages"></tbody>
@@ -153,7 +154,6 @@
           </div>
           <input type="text" placeholder="Search..." id="fMessages" class="form-control my-input-small" style="width:
             400px; margin: 15px; float: left;" onkeyup="filterRows('fMessages', 'tbodyMessages')">
-          <button type="button" id="exportMessages" class="btn btn-success my-btn" style="margin: 15px; float: left;">Export</button>
         </div>
 
         <button id="logs" class="accordion">Logs</button>
@@ -163,12 +163,12 @@
               <thead>
                 <tr>
                   <th style="width: 0%; display: none;"></th>
-                  <th style="width: 10%; min-width: 170px; text-align: center;" onclick="sortRows(1, 'tbodyLogs')">Date</th>
-                  <th style="width: 15%; min-width: 250px; text-align: center;" onclick="sortRows(2, 'tbodyLogs')">Question</th>
-                  <th style="width: 10%; min-width: 170px; text-align: center;" onclick="sortRows(3, 'tbodyLogs')">Dataset</th>
-                  <th style="width: 10%; min-width: 170px; text-align: center;" onclick="sortRows(4, 'tbodyLogs')">Answer type</th>
-                  <th style="width: 15; min-width: 250px; text-align: center;" onclick="sortRows(5, 'tbodyLogs')">Answer</th>
-                  <th style="width: 40%; min-width: 400px; text-align: center;" onclick="sortRows(6, 'tbodyLogs')">Info</th>
+                  <th style="min-width: 170px; text-align: center;" onclick="sortRows(1, 'tbodyLogs')">Date</th>
+                  <th style="min-width: 250px; text-align: center;" onclick="sortRows(2, 'tbodyLogs')">Question</th>
+                  <th style="min-width: 150px; text-align: center;" onclick="sortRows(3, 'tbodyLogs')">Dataset</th>
+                  <th style="min-width: 150px; text-align: center;" onclick="sortRows(4, 'tbodyLogs')">Answer type</th>
+                  <th style="min-width: 250px; text-align: center;" onclick="sortRows(5, 'tbodyLogs')">Answer</th>
+                  <th style="min-width: 400px; text-align: center;" onclick="sortRows(6, 'tbodyLogs')">Info</th>
                 </tr>
               </thead>
               <tbody id="tbodyLogs"></tbody>
@@ -176,7 +176,6 @@
           </div>
           <input type="text" placeholder="Search..." id="fLogs" class="form-control my-input-small" style="width:
             400px; margin: 15px; float: left;" onkeyup="filterRows('fLogs', 'tbodyLogs')">
-          <button type="button" id="exportLogs" class="btn btn-success my-btn" style="margin: 15px; float: left;">Export</button>
         </div>
       </div>
 
@@ -521,30 +520,6 @@
         $('#modal').modal('show')
       }
 
-      function send(data) {
-        var d = JSON.stringify(data)
-        xhr.open("POST", "/development", true)
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(d)
-      }
-
-      function generateList(list, place) {
-        pl = document.getElementById(place)
-        for (var i = pl.childNodes.length - 1; i > 5; i--) {
-          pl.childNodes[i].remove()
-        }
-        for (var i = 0; i < list.length; i++) {
-          var listElem = document.createElement("a")
-          listElem.innerHTML = list[i]
-          listElem.className = "lang-label"
-          pl.appendChild(listElem)
-        }
-      }
-
-      function getInfo(obj, name) {
-        send({"action": "get" + obj + "Info", "name": name})
-      }
-
       function saveFeatures() {
         var f = []
         var tbody = document.getElementById("tbodyFeatures")
@@ -772,10 +747,10 @@
         for (var i = 0; i < mes.length; i++) {
           var row = document.createElement("tr")
           addIdDiv(row, mes[i]["id"])
-          addDiv(row, "height: 75px; overflow-y: auto;", mes[i]["datetime"])
-          addDiv(row, "height: 75px; overflow-y: auto;", mes[i]["question"])
-          addDiv(row, "height: 75px; overflow-y: auto;", mes[i]["answer"])
-          addDiv(row, "height: 75px; overflow-y: auto;", mes[i]["message"])
+          addDiv(row, "height: 75px; overflow-y: auto; max-width: 250px;", mes[i]["datetime"])
+          addDiv(row, "height: 75px; overflow-y: auto; max-width: 450px;", mes[i]["question"])
+          addDiv(row, "height: 75px; overflow-y: auto; max-width: 450px;", mes[i]["answer"])
+          addDiv(row, "height: 75px; overflow-y: auto; max-width: 650px;", mes[i]["message"])
           tb.appendChild(row)
         }
       }
@@ -783,71 +758,86 @@
       function addLogs(logs) {
         tb = document.getElementById("tbodyLogs")
         for (var i = 0; i < logs.length; i++) {
+          console.log(logs[i]["json"])
           var log = logs[i]["json"]
           var row = document.createElement("tr")
-
           addIdDiv(row, logs[i]["id"])
-          addDiv(row, "height: 75px; overflow-y: auto;", log["datetime"])
-          addDiv(row, "height: 75px; overflow-y: auto;", log["question"])
-          addDiv(row, "height: 75px; overflow-y: auto;", log["dataset"])
-          addDiv(row, "height: 75px; overflow-y: auto;", log["answerType"])
-          addDiv(row, "height: 75px; overflow-y: auto;", log["answer"])
-          addDiv(row, "height: 75px; overflow-y: auto;", log["question"])
-
+          addDiv(row, "height: 75px; overflow-y: auto; max-width: 250px;", log["datetime"])
+          addDiv(row, "height: 75px; overflow-y: auto; max-width: 300px;", log["question"])
+          addDiv(row, "height: 75px; overflow-y: auto; max-width: 200px;", log["dataset"])
+          addDiv(row, "height: 75px; overflow-y: auto; max-width: 200px;", log["answerType"])
+          addDiv(row, "height: 75px; overflow-y: auto; max-width: 350px;", log["answer"])
+          addDiv(row, "height: 75px; overflow-y: auto; max-width: 500px;", getLogInfo(log))
           tb.appendChild(row)
         }
       }
 
-      function addIdDiv(row, text) {
-        var td = document.createElement("td")
-        var div = document.createElement("div")
-        div.innerHTML = text
-        td.style = "display: None; width: 0%;"
-        td.appendChild(div)
-        row.appendChild(td)
-      }
+      function getLogInfo(log) {
+        var s = ""
 
-      function addDiv(row, style, text) {
-        var td = document.createElement("td")
-        var div = document.createElement("div")
-        div.innerHTML = text
-        div.style = style
-        td.appendChild(div)
-        row.appendChild(td)
-      }
-
-      function openTab(evt, tabName) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tabcontent")
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none"
+        if (log["template"] === null) {
+          s += "Statistic: null, "
+        } else {
+          s += "Statistic: \"" + log["statistic"] + "\", "
         }
-        tablinks = document.getElementsByClassName("tablinks")
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "")
+
+        if (log["template"] === null) {
+          s += "Template: null, "
+        } else {
+          s += "Template: \"{\"question\": \"" + log["template"]["question"] + "\", "
+          s += "\"answer\": \"" + log["template"]["answer"] + "\"} , "
         }
-        document.getElementById(tabName).style.display = "block"
-        evt.currentTarget.className += " active"
-      }
 
-      function showHide() {
-        document.getElementById("typesList").classList.toggle("show")
-      }
-
-      function cleanString(s) {
-        if (s !== "") {
-          s = s.slice(1, -1)
-          return s
+        if (log["template"] === null) {
+          s += "Delimiter: null, "
+        } else {
+          s += "Delimiter: \"" + log["delimiter"] + "\", "
         }
-      }
 
-      function clearTableBody(name, except="") {
-        var t = document.getElementById(name)
-        for (var i = t.childNodes.length - 1; i > -1; i--) {
-          if (t.childNodes[i].id !== except) {
-            t.childNodes[i].remove()
+        if (log["args1"] === null || log["args1"].length === 0) {
+          s += "Args1: null, "
+        } else {
+          s += "Args1: ["
+          for (var i = 0; i < log["args1"].length; i++) {
+            s += "{\"feature\": \"" +  log["args1"][i]["feature"] + "\", "
+            s += "\"interval\": \"" + log["args1"][i]["interval"] + "\", "
+            s += "\"value\": \"" + log["args1"][i]["value"] + "\"}, "
           }
+          s = s.slice(0, -2) + "], "
         }
+
+        if (log["connectors1"] === null || log["connectors1"].length === 1) {
+          s += "Connectors1: null, "
+        } else {
+          s += "Connectors1: ["
+          for (var i = 0; i < log["connectors1"].length; i++) {
+            s += "\"" + log["connectors1"][i] + "\", "
+          }
+          s = s.slice(0, -2) + "], "
+        }
+
+        if (log["args2"] === null || log["args2"].length === 0) {
+          s += "Args2: null, "
+        } else {
+          s += "Args2: ["
+          for (var i = 0; i < log["args2"].length; i++) {
+            s += "{\"feature\": \"" +  log["args2"][i]["feature"] + "\", "
+            s += "\"interval\": \"" + log["args2"][i]["interval"] + "\", "
+            s += "\"value\": \"" + log["args2"][i]["value"] + "\"}, "
+          }
+          s = s.slice(0, -2) + "], "
+        }
+
+        if (log["connectors2"] === null || log["connectors2"].length === 1) {
+          s += "Connectors2: null"
+        } else {
+          s += "Connectors2: ["
+          for (var i = 0; i < log["connectors2"].length; i++) {
+            s += "\"" + log["connectors2"][i] + "\", "
+          }
+          s = s.slice(0, -2) + "]"
+        }
+        return s
       }
 
       function clearDatasetInfo() {
@@ -880,97 +870,6 @@
         $('#newTemplateDelimiters').val("")
         $('#newTemplateAnswer').val("")
       }
-
-      function filterFunction(inp, outp) {
-        var filter = document.getElementById(inp).value.toUpperCase()
-        var div = document.getElementById(outp)
-        var a = div.getElementsByTagName("a")
-        for (var i = 0; i < a.length; i++) {
-          if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
-            a[i].style.display = ""
-          } else {
-            a[i].style.display = "none"
-          }
-        }
-      }
-
-      function filterRows(inp, outp) {
-        var filter = document.getElementById(inp).value.toUpperCase()
-        var tbody = document.getElementById(outp)
-        for (var i = 0; i < tbody.childNodes.length; i++) {
-          tbody.childNodes[i].style.display = "none"
-          for (var j = 0; j < tbody.childNodes[i].childNodes.length; j++) {
-            if (tbody.childNodes[i].childNodes[j].childNodes[0].innerHTML.toUpperCase().indexOf(filter) > -1) {
-              tbody.childNodes[i].style.display = ""
-            }
-          }
-        }
-      }
-
-      function sortRows(inp, outp) {
-        var tbody = document.getElementById(outp)
-        var itemsArr = []
-        for (var i = 0; i < tbody.childNodes.length; i++) {
-            itemsArr.push(tbody.childNodes[i])
-        }
-        if (itemsArr.length < 2) {
-          return null
-        }
-        if (itemsArr[0].childNodes[inp].childNodes[0].innerHTML < itemsArr[itemsArr.length - 1].childNodes[inp].childNodes[0].innerHTML) {
-          itemsArr.sort(function(a, b) {
-            return a.childNodes[inp].childNodes[0].innerHTML == b.childNodes[inp].childNodes[0].innerHTML
-              ? 0
-              : (a.childNodes[inp].childNodes[0].innerHTML < b.childNodes[inp].childNodes[0].innerHTML ? 1 : -1)
-          })
-        } else {
-          itemsArr.sort(function(a, b) {
-            return a.childNodes[inp].childNodes[0].innerHTML == b.childNodes[inp].childNodes[0].innerHTML
-              ? 0
-              : (a.childNodes[inp].childNodes[0].innerHTML > b.childNodes[inp].childNodes[0].innerHTML ? 1 : -1)
-          })
-        }
-        for (i = 0; i < itemsArr.length; ++i) {
-          tbody.appendChild(itemsArr[i])
-        }
-      }
-
-      /* Types recognition (string, datetime, integer, float, currency, percent) */
-
-      function isDatetime(str) {
-        if (str.search(/[0-9]{1,2}[.\/][0-9]{1,2}[.\/][0-9]{1,4}/) === -1) {
-         return false
-        }
-        return true
-      }
-
-      function isCurrency(str) {
-        if (str.search(/([$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦]\s*[0-9])|([0-9]\s*[$¢£¤¥₠₣₤₪€₯₰₱₸₹₽﹩＄￠￥￡￦])/) === -1) {
-         return false
-        }
-        return true
-      }
-
-      function isPercent(str) {
-        if (str.search(/[0-9]\s*%/) === -1) {
-         return false
-        }
-        return true
-      }
-
-      function isFloat(str) {
-        if (str.search(/([0-9]*[.,][0-9]+)|([0-9]+[.,][0-9]*)/) === -1) {
-         return false
-        }
-        return true
-      }
-
-      function isInteger(str) {
-        if (str.search(/[0-9]+/) === -1) {
-         return false
-        }
-        return true
-      }
-
     </script>
   </body>
 </html>

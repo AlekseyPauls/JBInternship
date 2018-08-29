@@ -1,6 +1,5 @@
 Question,Delimiters,Answer
 In which,"['were','was','there is','there are']",In <>
-How many,"['in', 'were in', 'was in', 'is in', 'are in', 'there are in', 'there is in', 'at', 'were at', 'was at', 'is at', 'are at', 'there are at', 'there is at']",<>
-How much,"['in', 'were in', 'was in', 'is in', 'are in', 'there are in', 'there is in', 'at', 'were at', 'was at', 'is at', 'are at', 'there are at', 'there is at']",<>
-What,"['in', 'were in', 'was in', 'is in', 'are in', 'there are in', 'there is in', 'at', 'were at', 'was at', 'is at', 'are at', 'there are at', 'there is at']",<>
-Where,"['was', 'were', 'there is', 'there are', 'are', 'is']",<>
+How much,"['in', 'were in', 'was in', 'is in', 'are in', 'there are in', 'there is in', 'at', 'were at', 'was at', 'is at', 'are at', 'there are at', 'there is at']",The <>
+What,"['in', 'were in', 'was in', 'is in', 'are in', 'there are in', 'there is in', 'at', 'were at', 'was at', 'is at', 'are at', 'there are at', 'there is at']",The <>
+Where,"['was', 'were', 'there is', 'there are', 'are', 'is']",The <>

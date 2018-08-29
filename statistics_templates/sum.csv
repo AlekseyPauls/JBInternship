@@ -1,0 +1,20 @@
+Question,Delimiters,Answer
+The sum of,"['in', 'at']",The sum is <>
+The total of,"['in', 'at']",The total is <>
+The total number of,"['in', 'at']",The total number is <>
+What is the sum of,"['in', 'at']",The sum is <>
+What is the total of,"['in', 'at']",The total is <>
+What is sum,"['in', 'at']",The sum is <>
+What is total,"['in', 'at']",The total is <>
+What sum,"['in', 'was in', 'is in', 'there is in', 'at', 'was at', 'is at', 'there is at']",The sum is <>
+What total,"['in', 'was in', 'is in', 'there is in', 'at', 'was at', 'is at', 'there is at']",The total is <>
+How many,"['in', 'were in', 'was in', 'is in', 'are in', 'there are in', 'there is in', 'at', 'were at', 'was at', 'is at', 'are at', 'there are at', 'there is at']",The <>
+Sum of,"['in', 'at']",The sum is <>
+Total of,"['in', 'at']",The total is <>
+Sum,"['in', 'at']",The sum is <>
+Total,"['in', 'at']",The total is <>
+Sum of,"['']",The sum is <>
+Total of,"['']",The total is <>
+Sum,"['']",The maximum is <>
+Total,"['']",The total is <>
+How many,"['']",The <>
