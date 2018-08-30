@@ -54,7 +54,7 @@ def exec_command():
                "specific value or an interval of a feature)\n" \
                "2. To enter multiple arguments of the first or second type, separate them explicitly with the words " \
                "'and' and 'or'(don`t use commas)\n" \
-               "3. Don`t use hard dependencies when one feature depends on another in one argument " \ 
+               "3. Don`t use hard dependencies when one feature depends on another in one argument " \
                "(for example, 'Mean of users after 2017 year'). You can achieve the same effect by slightly changing " \
                "the question ('Mean of users in year after 2017') - now dependence of the features is explicit.\n" \
                "4. If you want to add an interval ('more', 'before', ...) for a group of arguments, make it for each " \

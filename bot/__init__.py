@@ -11,15 +11,24 @@ try:
     SLACK_TOKEN = config['bot']['SLACK_TOKEN']
     ADMIN = config['service']['ADMIN']
     PASSWORD = config['service']['PASSWORD']
-    print("Get config")
+    USER = config['db']['USER']
+    PWD = config['db']['PWD']
+    DB = config['db']['DB']
+    HOST = config['db']['HOST']
+    PORT = config['db']['PORT']
+    print("Get config successfully")
 except Exception:
     print("Cant read config file")
     SLACK_TOKEN = ""
 
 
 app = Flask(__name__)
+# Heroku
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+# Local debug
 #app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///bot"
+# Docker
+#app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://%s:%s@%s:%s/%s" % (USER, PWD, HOST, PORT, DB)
 auth = HTTPBasicAuth()
 Mobility(app)
 slack = Slacker(SLACK_TOKEN)
