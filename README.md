@@ -113,6 +113,17 @@ You will get a message with information about question creating for better recog
 
 With this command you can leave feedback.
 
+### Bot creating
+
+To create your own app with this bot you should create app in Slack and:
+
+1. Set 'Request URL' as 'your_address/webhook'
+2. Subscribe your bot to events 'im_created', 'im_open', 'message.channels' and 'message.im'
+3. Add slash commands '/info', '/info_dataset', 'info_statistic', 'rules' and 'fb' with 'Request URL' as 
+'your_address/commands' (info about commands arguments above)
+4. Set 'SLACK_TOCKEN' in your settings.properties as 'Bot User OAuth Access Token' value in your Slack app
+5. Finish bot creating and add it to your workspace
+
 ## Rules
 
 Bot tries to recognize the questions in natural language, but we can help him in this by formulating clear questions. 
@@ -190,7 +201,6 @@ How many,"['were', 'was']",<><br/>
 Mean of,"['']",Mean is <><br/>
 
 #### Statistic script
-
 The statistics script is invoked by the application to find and process data from the database file. 
 This is a script in Python, which contains one function - "calc", which takes several arguments 
 (current_template, dataset, args1, connectors1, args2, connectors2) to the input and returns a string.

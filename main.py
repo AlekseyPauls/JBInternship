@@ -73,6 +73,11 @@ def exec_command():
     return "ok"
 
 
+@app.route('/health', methods=["POST", "GET"])
+def start():
+    return "Service is health!"
+
+
 @app.route('/', methods=["POST", "GET"])
 @mobile_template('{mobile/}StartPage.html')
 def start(template):
