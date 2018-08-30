@@ -53,16 +53,20 @@ def exec_command():
                "searched for), a delimiter (often a preposition), and a dependent argument (a condition, usually a " \
                "specific value or an interval of a feature)\n" \
                "2. To enter multiple arguments of the first or second type, separate them explicitly with the words " \
-               "'and' and 'or'\n" \
-               "3. If you want to add an interval ('more', 'before', ...) for a group of arguments, make it for each " \
+               "'and' and 'or'(don`t use commas)\n" \
+               "3. Don`t use hard dependencies when one feature depends on another in one argument " \ 
+               "(for example, 'Mean of users after 2017 year'). You can achieve the same effect by slightly changing " \
+               "the question ('Mean of users in year after 2017') - now dependence of the features is explicit.\n" \
+               "4. If you want to add an interval ('more', 'before', ...) for a group of arguments, make it for each " \
                "individual entity\n" \
-               "4. Do not use unnecessary words, like adjectives. If you did not receive an answer, try to delete " \
+               "5. Don`t use unnecessary words, like adjectives. If you did not receive an answer, try to delete " \
                "the unnecessary words and articles\n " \
-               "5. If the bot replied that it did not find a suitable template, examine the list of statistics and " \
+               "6. If the bot replied that it did not find a suitable template, examine the list of statistics and " \
                "their templates and try asking a question again\n" \
-               "6. If there was a problem with the recognition of the dataset, specify your arguments in the name of " \
-               "the feature ('4535 users', 'montn april') 7. If nothing helped, then leave a feedback and the problem " \
-               "will be solved"
+               "7. If there was a problem with the recognition of the dataset, specify your arguments in the name of " \
+               "the feature ('4535 users', 'month april') 7. If nothing helped, then leave a feedback and the problem " \
+               "will be solved\n" \
+               "8. If nothing helped, then leave a feedback and the problem will be solved"
     elif command == "/fb":
         serv.save_feedback(text)
         return "Thank you for the help!"

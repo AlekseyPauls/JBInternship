@@ -126,14 +126,14 @@ interval of a feature)
 3. Don`t use hard dependencies when one feature depends on another in one argument 
 (for example, "Mean of users after 2017 year"). You can achieve the same effect by slightly changing the question 
 ("Mean of users in year after 2017") - now dependence of the features is explicit.
-3. If you want to add an interval ("more", "less") for a group of arguments, make it for each individual entity
-4. Do not use unnecessary words, like adjectives. If you did not receive an answer, try to delete the unnecessary 
+4. If you want to add an interval ("more", "less") for a group of arguments, make it for each individual entity
+5. Don`t use unnecessary words, like adjectives. If you did not receive an answer, try to delete the unnecessary 
 words and articles
-5. If the bot replied that it did not find a suitable template, examine the list of statistics and their templates 
+6. If the bot replied that it did not find a suitable template, examine the list of statistics and their templates 
 and try asking a question again
-6. If there was a problem with the recognition of the dataset, specify your arguments in the name of the feature 
+7. If there was a problem with the recognition of the dataset, specify your arguments in the name of the feature 
 ("4535 users", "montn april")
-7. If nothing helped, then leave a feedback and the problem will be solved
+8. If nothing helped, then leave a feedback and the problem will be solved
 
 ## Development
 
@@ -159,13 +159,15 @@ the search.
 When you select a file with a database, you can automatically extract features, their types and values, 
 and then edit them manually. To do this, click the import button in the new feature row.
 
+Make sure that the values of the various features are not the same and that the feature has the correct type.
+
 #### Prepare data
 
 To download data, it need to be prepared. It is enough to take into account several recommendations:
 
 1. Give the date in the form "DD.MM.YYYY" or "DD/MM/YYYY"
-2. If in your data, for example, month and year are different features then they are different entities and can`t be recognized as 
-one entity (date)
+2. If in your data, for example, month and year are different features then they are different entities and can`t be 
+recognized as one entity (date). If you want to do differently, change the data.
 
 ### Statistic
 
@@ -200,6 +202,9 @@ The function should not handle exceptions and should do several things:
 5. If the necessary data were not found, then report it. If found, then substitute them for "<>" in response from the 
 template
 
+Base your script on an existing one.
+
 ### Feedback
 
-Feedback - in progress
+On this page you can see messages from users and app logs. You can find values and sorting rows by clicking on their 
+names.
