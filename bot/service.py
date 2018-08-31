@@ -90,7 +90,8 @@ def delete_statistic(name):
 
 
 def delete_file(name, folder):
-    os.remove(folder + "/" + name)
+    if os.path.isfile(folder + "/" + name):
+        os.remove(folder + "/" + name)
 
 
 def get_datasets_info():

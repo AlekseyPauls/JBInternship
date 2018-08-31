@@ -37,7 +37,7 @@ class TestIn(unittest.TestCase):
     def test_errors(self):
         a = make_answer("In which date were 100?", "Test")
         self.assertEqual(a, "There is no such data")
-        a = make_answer("NoneTemplate?", "Test")
+        a = make_answer("None Template?", "Test")
         self.assertEqual(a, "Have no suitable template (can't understand your question)")
         a = make_answer("In which date were 100?", "dsfasdfadfadsfasdfasdfdsafadsfdasfadsfaetewd")
         self.assertEqual(a, "Wrong dataset. There is no dataset with this name.")
