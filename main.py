@@ -2,7 +2,7 @@ from flask import request
 from flask import make_response, render_template
 from flask_mobility.decorators import mobile_template
 import os, json
-from bot import app, slack, auth, ADMIN, PASSWORD
+from bot import app, slack, auth, ADMIN, PASSWORD, APPHOST, APPPORT, DEBUG
 from bot.respondent import make_answer
 from bot.respondent import types
 import bot.service as serv
@@ -74,7 +74,7 @@ def exec_command():
 
 
 @app.route('/health', methods=["POST", "GET"])
-def start():
+def health():
     return "Service is health!"
 
 
@@ -165,5 +165,4 @@ def get_pw(username):
 
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
-    app.run(debug=False, port=port, host='0.0.0.0')
+    app.run(debug=bool(DEBUG), port=int(APPPORT), host=APPHOST)
