@@ -1,5 +1,4 @@
-from flask import request
-from flask import make_response, render_template
+from flask import make_response, render_template, request
 from flask_mobility.decorators import mobile_template
 import os, json
 from bot import app, slack, auth, ADMIN, PASSWORD, APPHOST, APPPORT, DEBUG
@@ -22,10 +21,11 @@ def hello_slack():
             slack.chat.post_message(slack_event["channel"], answer)
             return make_response("ok", 200, {"content_type": "application/json"})
     elif slack_event["type"] == "im_created":
-        slack.chat.post_message(slack_event["channel"], "Hello once")
+        slack.chat.post_message(slack_event["channel"], "Hello new user! Please, check the bot app description and"
+                                                        " possible commands")
         return make_response("ok", 200, {"content_type": "application/json"})
     elif slack_event["type"] == "im_created":
-        slack.chat.post_message(slack_event["channel"], "Hello again")
+        slack.chat.post_message(slack_event["channel"], "Hello!")
         return make_response("ok", 200, {"content_type": "application/json"})
 
 
