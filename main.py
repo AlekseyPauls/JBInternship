@@ -165,4 +165,5 @@ def get_pw(username):
 
 
 if __name__ == '__main__':
-    app.run(debug=bool(DEBUG), port=int(APPPORT), host=APPHOST)
+    port = int(os.getenv('PORT', 5000)) # For Heroku, in another way can be used APPPORT
+    app.run(debug=bool(DEBUG), port=port, host=APPHOST)
