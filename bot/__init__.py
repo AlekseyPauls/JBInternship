@@ -26,7 +26,7 @@ except Exception:
 
 
 app = Flask(__name__)
-# Heroku
+# Heroku config
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 # Local debug
 #app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///bot"
