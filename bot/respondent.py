@@ -71,7 +71,7 @@ def make_answer(question, dataset):
         args1 = find_features(args1, features)
         args2 = find_features(args2, features)
 
-        if args1 is "More than one" or args2 is "More than one":
+        if args1 == "More than one" or args2 == "More than one":
             serv.save_log(get_log(question, dataset, "error", "Ambiguity"))
             log.info("answer", extra=get_log(question, dataset, "error", "Ambiguity"))
             return "Please, specify values in question with feature names - during the recognition of the feature " \
@@ -174,7 +174,7 @@ def find_features(args, features):
             ft, val = get_feature_by_values(arg, features)
         if ft is None:
             ft, val = get_feature_by_type(arg, features)
-        if ft is "More than one":
+        if ft == "More than one":
             return "More than one"
         if ft is not None:
             x["feature"], x["value"] = ft, val

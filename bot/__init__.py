@@ -27,9 +27,9 @@ except Exception:
 
 app = Flask(__name__)
 # Heroku
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 # Local debug
-#app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///bot"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///bot"
 # Docker
 #app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://%s:%s@%s:%s/%s" % (USER, PWD, HOST, PORT, DB)
 auth = HTTPBasicAuth()
