@@ -202,9 +202,13 @@ def get_feature_by_name(arg, features):
 def get_feature_by_values(arg, features):
     for feature in features:
         for val in feature["values"]:
-            if val != "" and val == get_arg_by_type(arg, feature["type"]):
+            if val != "" and val.lower() == get_arg_by_type(arg, feature["type"]):
                 val = get_arg_by_type(val, feature["type"])
                 return feature["name"], val
+    for feature in features:
+        for val in feature["values"]:
+            if val != "" and val.lower() in arg:
+                return feature["name"], get_arg_by_type(val, feature["type"])
     return None, None
 
 
@@ -216,7 +220,7 @@ def get_feature_by_type(arg, features):
             f = feature
             counter += 1
     if counter > 1:
-        return "More than one"
+        return "More than one", None
     if counter == 1:
         return f["name"], get_arg_by_type(arg, f["type"])
     return None, None
